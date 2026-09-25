@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+
+<html lang="vi">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AutoGrading — TRƯỜNG TIỂU HỌC VĂN KHÊ</title>
+<!-- Tailwind CSS CDN -->
+<!-- Font Awesome 6 Icons -->
+<!-- Chart.js for interactive analytics -->
+<!-- SheetJS (xlsx) for direct Excel export of student gradebooks -->
+<style>
+    @keyframes pulse-gentle {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.03); }
+    }
+    .animate-pulse-gentle {
+      animation: pulse-gentle 2.5s infinite ease-in-out;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #print-area, #print-area * {
+        visibility: visible;
+      }
+      #print-area {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+<link href="assets/styles.css" rel="stylesheet"/><link href="assets/vendor/fontawesome.min.css" rel="stylesheet"/><link href="assets/app.css" rel="stylesheet"/></head>
+<body class="bg-[#F8F9FA] text-slate-800 font-sans antialiased min-h-screen flex flex-col custom-scrollbar"><noscript>Vui lòng bật JavaScript để chọn lớp, tính biểu đồ và xuất bảng điểm.</noscript>
+<header class="bg-white border-b border-rose-100 px-4 py-3 sticky top-0 z-40 shadow-sm">
+<div class="max-w-[1600px] mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
+<!-- Left Tagline -->
+<div class="hidden lg:flex items-center gap-2 text-xs font-semibold text-rose-600 bg-rose-50 px-3 py-1.5 rounded-full border border-rose-200">
+<i class="fa-solid fa-microchip"></i>
+<span>AI CHO GIÁO DỤC HIỆU QUẢ HƠN</span>
+</div>
+<!-- Main Banner Title with double slashes matching UI -->
+<div class="text-center flex-1">
+<div class="flex items-center justify-center gap-3">
+<span class="text-brand-red font-black text-xl tracking-tighter hidden sm:inline">\\</span>
+<h1 class="text-lg sm:text-2xl md:text-3xl font-extrabold text-brand-red uppercase tracking-wide drop-shadow-sm">
+            TRỢ LÝ AI CHẤM ĐIỂM TỰ ĐỘNG VÀ CÁ NHÂN HÓA BÀI TẬP
+          </h1>
+<span class="text-brand-red font-black text-xl tracking-tighter hidden sm:inline">//</span>
+</div>
+<p class="text-xs sm:text-sm text-slate-500 font-medium mt-0.5">TRƯỜNG TIỂU HỌC VĂN KHÊ</p>
+</div>
+<!-- Right Tagline -->
+<div class="hidden lg:flex items-center gap-2 text-xs font-medium text-slate-500 italic">
+<span>Công nghệ hỗ trợ giáo dục • Vì một thế hệ tương lai</span>
+<i class="fa-solid fa-graduation-cap text-brand-red text-sm"></i>
+</div>
+</div>
+</header>
+<div class="bg-gradient-to-r from-rose-50 via-white to-rose-50 border-b border-rose-100 px-4 py-2.5">
+<div class="max-w-[1600px] mx-auto flex flex-wrap items-center justify-between gap-3">
+<!-- Greeting -->
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-brand-red text-white flex items-center justify-center font-bold shadow-md shadow-rose-200">
+<i class="fa-solid fa-user-tie"></i>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-bold text-slate-800 text-sm md:text-base">Xin chào, admin!</span>
+<span class="bg-emerald-100 text-emerald-700 text-xs px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span> Chế độ cục bộ
+            </span>
+</div>
+<p class="text-xs text-slate-500">Chúc thầy/cô một ngày làm việc hiệu quả và nhiều niềm vui!</p>
+</div>
+</div>
+<!-- Subject & Class quick selectors -->
+<div class="flex flex-wrap items-center gap-2.5">
+<!-- Subject Badge Selector -->
+<div class="flex items-center bg-white p-1 rounded-xl border border-rose-200 shadow-sm text-xs font-semibold">
+<button class="px-2.5 py-1 rounded-lg transition-all bg-brand-red text-white" id="btn-subject-all" onclick="setFilterSubject('ALL')">
+            Tất cả (2 môn)
+          </button>
+<button class="px-2.5 py-1 rounded-lg transition-all text-slate-600 hover:text-brand-red" id="btn-subject-math" onclick="setFilterSubject('TOAN')">
+<i class="fa-solid fa-calculator mr-1"></i> Toán
+          </button>
+<button class="px-2.5 py-1 rounded-lg transition-all text-slate-600 hover:text-brand-red" id="btn-subject-viet" onclick="setFilterSubject('TIENG_VIET')">
+<i class="fa-solid fa-book-open mr-1"></i> Tiếng Việt
+          </button>
+</div>
+<!-- Class Selector Dropdown -->
+<div class="relative">
+<select class="text-xs font-bold bg-white border border-rose-200 text-slate-700 rounded-xl px-3 py-1.5 shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-red" id="global-class-select" onchange="changeActiveGlobalClass(this.value)"><option value="3A4">Lớp 3 — 3A4 (28 tên/môn)</option><option value="4">Lớp 4 (28 tên/môn)</option><option value="5A3">Lớp 5 — 5A3 (30 tên/môn)</option></select>
+</div>
+<!-- Notification Bell -->
+<div class="relative cursor-pointer" onclick="showToast('Xem ghi chú đối chiếu tên và điểm trống phía trên.')">
+<div class="w-9 h-9 bg-white border border-rose-200 rounded-xl flex items-center justify-center text-slate-600 shadow-sm hover:text-brand-red transition-colors">
+<i class="fa-regular fa-bell"></i>
+</div>
+<span class="absolute -top-1 -right-1 bg-brand-red text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">!</span>
+</div>
+<!-- Teacher Profile Pill -->
+<div class="flex items-center gap-2 bg-white border border-rose-200 rounded-xl px-2.5 py-1 shadow-sm">
+<div class="w-7 h-7 bg-brand-red text-white rounded-lg flex items-center justify-center text-xs font-black">AD</div>
+<div class="hidden sm:block text-left">
+<p class="text-xs font-bold text-slate-800 leading-tight">admin</p>
+<p class="text-[10px] text-slate-500 leading-tight">Quản trị lớp 3, 4, 5</p>
+</div>
+<i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
+</div>
+</div>
+</div>
+</div>
+<div class="max-w-[1600px] w-full mx-auto flex-1 flex flex-col md:flex-row p-3 md:p-4 gap-4">
+<!-- LEFT SIDEBAR NAVIGATION -->
+<aside class="w-full md:w-64 flex-shrink-0 flex flex-col gap-3">
+<!-- App Brand Logo Card -->
+<div class="bg-gradient-to-br from-brand-red to-brand-darkred text-white p-4 rounded-2xl shadow-md flex items-center gap-3">
+<div class="w-11 h-11 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center text-2xl">
+<i class="fa-solid fa-graduation-cap"></i>
+</div>
+<div>
+<h2 class="text-lg font-black tracking-tight flex items-center gap-1.5">
+            AutoGrading
+            <span class="text-[10px] bg-white text-brand-red px-1.5 py-0.5 rounded font-black">AI</span>
+</h2>
+<p class="text-[11px] text-rose-100 font-medium">TRƯỜNG TIỂU HỌC VĂN KHÊ</p>
+</div>
+</div>
+<!-- Navigation Menu -->
+<nav class="bg-white border border-rose-100 rounded-2xl p-2 shadow-sm flex flex-col gap-1 text-sm font-semibold">
+<button class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-brand-red bg-rose-50 font-bold transition-all" id="nav-overview" onclick="switchTab('overview')">
+<i class="fa-solid fa-house w-5 text-center"></i>
+<span>Tổng quan</span>
+</button>
+<button class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-600 hover:bg-rose-50 hover:text-brand-red transition-all" id="nav-classes" onclick="switchTab('classes')">
+<i class="fa-solid fa-users w-5 text-center"></i>
+<span>Lớp học &amp; Học sinh</span>
+</button>
+<button class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-600 hover:bg-rose-50 hover:text-brand-red transition-all" id="nav-progress" onclick="switchTab('progress')">
+<i class="fa-solid fa-chart-line w-5 text-center"></i>
+<span>Theo dõi tiến độ 2 môn</span>
+<span class="ml-auto text-[10px] bg-rose-100 text-brand-red font-bold px-1.5 py-0.5 rounded">Mới</span>
+</button>
+<button class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-600 hover:bg-rose-50 hover:text-brand-red transition-all" id="nav-upload" onclick="switchTab('upload')">
+<i class="fa-solid fa-cloud-arrow-up w-5 text-center"></i>
+<span>Upload bài làm viết tay</span>
+</button>
+
+<button class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-600 hover:bg-rose-50 hover:text-brand-red transition-all" id="nav-queue" onclick="switchTab('queue')">
+<div class="flex items-center gap-3">
+<i class="fa-solid fa-list-check w-5 text-center"></i>
+<span>Hàng đợi chấm</span>
+</div>
+<span class="bg-brand-red text-white text-xs px-2 py-0.5 rounded-full font-bold" id="nav-queue-count">0</span>
+</button>
+<button class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-600 hover:bg-rose-50 hover:text-brand-red transition-all" id="nav-results" onclick="switchTab('results')">
+<i class="fa-solid fa-square-poll-vertical w-5 text-center"></i>
+<span>Kết quả AI &amp; Chi tiết</span>
+</button>
+<button class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-600 hover:bg-rose-50 hover:text-brand-red transition-all" id="nav-approval" onclick="switchTab('approval')">
+<div class="flex items-center gap-3">
+<i class="fa-solid fa-circle-check w-5 text-center"></i>
+<span>Phê duyệt giáo viên</span>
+</div>
+<span class="bg-amber-500 text-white text-xs px-2 py-0.5 rounded-full font-bold" id="nav-approval-count">0</span>
+</button>
+<button class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-600 hover:bg-rose-50 hover:text-brand-red transition-all" id="nav-personalized" onclick="switchTab('personalized')">
+<i class="fa-solid fa-file-circle-check w-5 text-center text-emerald-600"></i>
+<span>Phiếu BT cá nhân hóa</span>
+</button>
+
+
+
+</nav>
+<div class="mt-auto bg-gradient-to-br from-rose-100/90 via-white to-rose-50 border border-rose-200 p-3.5 rounded-2xl shadow-sm text-center flex items-center gap-3">
+<div class="w-12 h-12 rounded-2xl bg-brand-red/10 text-brand-red flex items-center justify-center text-2xl flex-shrink-0 border border-rose-200 animate-pulse-gentle">
+<i class="fa-solid fa-robot"></i>
+</div>
+<div class="text-left">
+<h4 class="text-xs font-black text-brand-red uppercase tracking-wider">AI ĐỒNG HÀNH</h4>
+<p class="text-[11px] text-slate-600 font-medium">CÙNG GIÁO VIÊN TIỂU HỌC</p>
+<span class="inline-block text-[10px] text-emerald-700 bg-emerald-100 font-bold px-1.5 py-0.2 rounded mt-0.5">Tiết kiệm 80% thời gian</span>
+</div>
+</div>
+</aside>
+<!-- RIGHT MAIN CONTENT AREA -->
+<main class="flex-1 flex flex-col gap-4 overflow-hidden"><section aria-label="Phạm vi dữ liệu" class="data-controls">
+<div aria-label="Chọn lớp" class="class-tabs" role="group">
+<button data-class="3A4" onclick="changeActiveGlobalClass('3A4')" type="button">Lớp 3 · 3A4</button>
+<button data-class="4" onclick="changeActiveGlobalClass('4')" type="button">Lớp 4</button>
+<button data-class="5A3" onclick="changeActiveGlobalClass('5A3')" type="button">Lớp 5 · 5A3</button></div>
+<label>Phổ điểm và duyệt điểm: <select id="round-select" onchange="setRound(this.value)"><option value="0">Đợt 1</option><option selected="" value="1">Đợt 2</option></select></label>
+<p aria-live="polite" id="data-scope"></p>
+<details><summary>Lưu ý đối chiếu dữ liệu nguồn</summary><p>Lớp 3: Toán có Lê Nhã Uyên, Nguyễn Anh Tú; Tiếng Việt có Trần Nhã Uyên, Nguyễn Cẩm Tú. Lớp 5: Toán có Nguyễn Mạnh Dũng; Tiếng Việt có Nguyễn Anh Dũng. Giữ riêng tên chưa khớp, không tự ghép điểm. Lớp 4: Nguyễn Gia Linh thiếu điểm Toán đợt 1. Nguồn chưa ghi mã lớp 4.</p><p>Mỗi môn có 28 / 28 / 30 tên ở lớp 3 / 4 / 5. Tổng hợp theo tên tạo 30 / 28 / 31 hồ sơ tạm, chưa phải sĩ số được xác nhận. Điểm trống không tính vào trung bình. Khi chọn cả hai môn, thống kê đếm lượt điểm, không đếm học sinh duy nhất.</p></details>
+</section>
+<!-- ================= SECTION 1: OVERVIEW TAB (Exact match to Dashboard Image 1.png) ================= -->
+<div class="tab-content space-y-4" id="tab-overview">
+<!-- 4 Top Metric Cards (Red background with white text & badges) -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+<!-- Card 1: Số lớp -->
+<div class="bg-gradient-to-br from-brand-red to-brand-darkred text-white p-4 md:p-5 rounded-2xl shadow-sm relative overflow-hidden flex items-center justify-between">
+<div>
+<p class="text-xs font-medium text-rose-100">Số lớp quản lý</p>
+<h3 class="text-2xl sm:text-3xl font-black mt-1" id="metric-classes">—</h3>
+<div class="flex items-center gap-1.5 text-xs text-rose-100 font-semibold mt-2"><span>Lớp 3, lớp 4, lớp 5</span></div>
+</div>
+<div class="w-14 h-14 rounded-2xl bg-white/15 flex items-center justify-center text-3xl">
+<i class="fa-solid fa-users"></i>
+</div>
+</div>
+<!-- Card 2: Số học sinh -->
+<div class="bg-gradient-to-br from-brand-red to-brand-darkred text-white p-4 md:p-5 rounded-2xl shadow-sm relative overflow-hidden flex items-center justify-between">
+<div>
+<p class="text-xs font-medium text-rose-100">Tên theo môn của lớp đang chọn</p>
+<h3 class="text-2xl sm:text-3xl font-black mt-1" id="metric-students">—</h3>
+<div class="flex items-center gap-1.5 text-xs text-rose-100 font-semibold mt-2"><span>Đối chiếu tên giữa hai môn</span></div>
+</div>
+<div class="w-14 h-14 rounded-2xl bg-white/15 flex items-center justify-center text-3xl">
+<i class="fa-solid fa-user-graduate"></i>
+</div>
+</div>
+<!-- Card 3: Bài đã chấm -->
+<div class="bg-gradient-to-br from-brand-red to-brand-darkred text-white p-4 md:p-5 rounded-2xl shadow-sm relative overflow-hidden flex items-center justify-between">
+<div>
+<p class="text-xs font-medium text-rose-100">Lượt điểm đã có (2 đợt)</p>
+<h3 class="text-2xl sm:text-3xl font-black mt-1" id="metric-scores">—</h3>
+<div class="flex items-center gap-1.5 text-xs text-rose-100 font-semibold mt-2"><span>Không tính ô trống</span></div>
+</div>
+<div class="w-14 h-14 rounded-2xl bg-white/15 flex items-center justify-center text-3xl">
+<i class="fa-solid fa-file-circle-check"></i>
+</div>
+</div>
+<!-- Card 4: Tỷ lệ đạt -->
+<div class="bg-gradient-to-br from-brand-red to-brand-darkred text-white p-4 md:p-5 rounded-2xl shadow-sm relative overflow-hidden flex items-center justify-between">
+<div>
+<p class="text-xs font-medium text-rose-100">Lượt điểm ≥ 5 (đợt đang chọn)</p>
+<h3 class="text-2xl sm:text-3xl font-black mt-1" id="metric-pass">—</h3>
+<div class="flex items-center gap-1.5 text-xs text-rose-100 font-semibold mt-2"><span>Quy ước thống kê theo điểm</span></div>
+</div>
+<div class="w-14 h-14 rounded-2xl bg-white/15 flex items-center justify-center text-3xl">
+<i class="fa-solid fa-chart-column"></i>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+<!-- Card: Quản lý lớp & học sinh -->
+<div class="bg-white border border-rose-100 rounded-2xl p-4 shadow-sm flex flex-col">
+<div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-3">
+<div class="flex items-center gap-2 text-brand-red font-bold">
+<div class="w-7 h-7 rounded-lg bg-rose-100 text-brand-red flex items-center justify-center text-xs">
+<i class="fa-solid fa-users"></i>
+</div>
+<span>Quản lý lớp &amp; học sinh</span>
+</div>
+<button class="text-xs text-brand-red font-semibold hover:underline flex items-center gap-1" onclick="switchTab('classes')">
+                Xem tất cả <i class="fa-solid fa-arrow-right text-[10px]"></i>
+</button>
+</div>
+<!-- Tabs: Danh sách lớp & Danh sách học sinh -->
+<div class="flex gap-2 mb-3 text-xs font-bold border-b border-slate-100 pb-2">
+<button class="px-3 py-1 rounded-lg bg-rose-100 text-brand-red" id="btn-tab-class" onclick="toggleOverviewClassTab('class')">Danh sách lớp</button>
+<button class="px-3 py-1 rounded-lg text-slate-500 hover:text-brand-red" id="btn-tab-student" onclick="toggleOverviewClassTab('student')">Danh sách học sinh</button>
+</div>
+<!-- Content Area for Classes -->
+<div class="space-y-2 flex-1" id="overview-classes-view"><button class="class-summary" onclick="selectClassForOverview('3A4')">Lớp 3 (3A4) · 28 tên/môn</button><button class="class-summary" onclick="selectClassForOverview('4')">Lớp 4 · 28 tên/môn</button><button class="class-summary" onclick="selectClassForOverview('5A3')">Lớp 5 (5A3) · 30 tên/môn</button></div>
+<!-- Content Area for Students (hidden initially or shown on toggle) -->
+<div class="hidden space-y-2 flex-1 max-h-48 overflow-y-auto custom-scrollbar" id="overview-students-view"></div>
+<!-- Footer Action -->
+<div class="mt-3 pt-2 border-t border-slate-100 flex justify-end">
+<button class="text-xs bg-rose-50 text-brand-red font-bold px-3 py-1.5 rounded-xl border border-rose-200 hover:bg-rose-100 transition-colors" onclick="switchTab('classes')">
+                Xem hồ sơ chi tiết lớp
+              </button>
+</div>
+</div>
+<!-- Card: Upload bài làm -->
+<div class="bg-white border border-rose-100 rounded-2xl p-4 shadow-sm flex flex-col">
+<div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-3">
+<div class="flex items-center gap-2 text-brand-red font-bold">
+<div class="w-7 h-7 rounded-lg bg-rose-100 text-brand-red flex items-center justify-center text-xs">
+<i class="fa-solid fa-file-arrow-up"></i>
+</div>
+<span>Upload bài làm học sinh</span>
+</div>
+<span class="text-[11px] text-slate-400 font-medium">Hỗ trợ ảnh (JPG, PNG) &amp; PDF</span>
+</div>
+<!-- Upload drag drop area -->
+<div class="border-2 border-dashed border-rose-200 hover:border-brand-red bg-rose-50/50 hover:bg-rose-50 rounded-xl p-4 text-center cursor-pointer transition-all flex flex-col items-center justify-center flex-1" onclick="document.getElementById('hidden-file-input').click()">
+<div class="w-11 h-11 rounded-full bg-brand-red text-white flex items-center justify-center text-lg shadow-sm mb-2">
+<i class="fa-solid fa-arrow-up-from-bracket"></i>
+</div>
+<p class="text-xs font-bold text-slate-700">Kéo thả file vào đây hoặc</p>
+<button class="mt-2 bg-brand-red text-white text-xs font-bold px-4 py-1.5 rounded-xl shadow hover:bg-brand-darkred transition-colors" type="button">
+                Chọn file bài làm
+              </button>
+<input accept=".jpg,.jpeg,.png,.pdf" aria-label="Chọn ảnh hoặc PDF bài làm" class="hidden" id="hidden-file-input" multiple="" onchange="handleFileSelection(event)" type="file"/>
+</div>
+<!-- Options & Uploaded preview counter -->
+<div class="mt-3 flex items-center justify-between text-xs">
+<label class="flex items-center gap-1.5 text-slate-600 cursor-pointer font-medium">
+<input checked="" class="rounded text-brand-red focus:ring-brand-red" id="check-auto-crop" type="checkbox"/>
+<span>Mô phỏng crop phần đầu bài</span>
+</label>
+<span class="text-[11px] text-brand-red font-bold bg-rose-100 px-2 py-0.5 rounded-full" id="overview-upload-count">Chưa chọn tệp</span>
+</div>
+</div>
+<!-- Card: Quản lý đề thi & rubric -->
+<div class="bg-white border border-rose-100 rounded-2xl p-4 shadow-sm flex flex-col">
+<div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-3">
+<div class="flex items-center gap-2 text-brand-red font-bold">
+<div class="w-7 h-7 rounded-lg bg-rose-100 text-brand-red flex items-center justify-center text-xs">
+<i class="fa-solid fa-clipboard-list"></i>
+</div>
+<span>Thiết lập chấm bài</span>
+</div>
+<button class="text-xs bg-brand-red text-white font-bold px-2.5 py-1 rounded-lg hover:bg-brand-darkred transition-colors flex items-center gap-1" onclick="AI.openSettings()">
+                Tạo mới <i class="fa-solid fa-plus text-[10px]"></i>
+</button>
+</div>
+<!-- Active Exam Card -->
+<div class="bg-rose-50/70 border border-rose-200 rounded-xl p-3 mb-3">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-2.5">
+<div class="w-9 h-9 rounded-lg bg-brand-red text-white flex items-center justify-center text-base">
+<i class="fa-solid fa-file-lines"></i>
+</div>
+<div>
+<h4 class="font-black text-slate-800 text-sm">Giữa kỳ 1 - Toán &amp; Tiếng Việt 5</h4>
+<p class="text-[11px] text-slate-500 font-medium">Bộ sách: Kết nối tri thức với cuộc sống</p>
+</div>
+</div>
+<div class="flex items-center gap-1">
+<span class="text-[10px] bg-rose-200 text-brand-red font-bold px-1.5 py-0.5 rounded flex items-center gap-1">
+<i class="fa-solid fa-lock text-[9px]"></i> Đã khóa
+                  </span>
+<span class="text-[10px] bg-white text-slate-600 font-bold px-1.5 py-0.5 rounded border border-slate-200">v1.2</span>
+</div>
+</div>
+<div class="flex items-center gap-4 text-xs text-slate-500 mt-2 font-medium">
+<span><i class="fa-regular fa-clock mr-1"></i> Thời gian: 40 phút</span>
+<span><i class="fa-regular fa-calendar mr-1"></i> Ngày tạo: 15/10/2025</span>
+</div>
+</div>
+<!-- Question types tags -->
+<p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-2">Cấu trúc đề &amp; Rubric chấm</p>
+<div class="grid grid-cols-3 gap-2 text-center text-xs">
+<div class="bg-slate-50 border border-slate-200 rounded-xl p-2">
+<p class="font-black text-brand-red text-sm">Trắc nghiệm</p>
+<p class="text-[11px] text-slate-500 font-medium">6 câu (3.0đ)</p>
+</div>
+<div class="bg-slate-50 border border-slate-200 rounded-xl p-2">
+<p class="font-black text-blue-700 text-sm">Bán tự luận</p>
+<p class="text-[11px] text-slate-500 font-medium">2 bài (3.0đ)</p>
+</div>
+<div class="bg-slate-50 border border-slate-200 rounded-xl p-2">
+<p class="font-black text-emerald-700 text-sm">Tự luận dài</p>
+<p class="text-[11px] text-slate-500 font-medium">1 bài (4.0đ)</p>
+</div>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+<!-- Hàng đợi chấm bài -->
+<div class="bg-white border border-rose-100 rounded-2xl p-4 shadow-sm flex flex-col">
+<div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-3">
+<div class="flex items-center gap-2 text-brand-red font-bold">
+<div class="w-7 h-7 rounded-lg bg-rose-100 text-brand-red flex items-center justify-center text-xs">
+<i class="fa-solid fa-list-ol"></i>
+</div>
+<span>Hàng đợi chấm bài</span>
+</div>
+<button class="text-xs text-brand-red font-semibold hover:underline" onclick="switchTab('queue')">
+                Xem tất cả <i class="fa-solid fa-arrow-right text-[10px]"></i>
+</button>
+</div>
+<!-- 4 status boxes -->
+<div class="grid grid-cols-2 gap-2.5 flex-1">
+<!-- Chờ chấm -->
+<div class="bg-rose-50/70 border border-rose-200 rounded-xl p-3 flex flex-col items-center justify-center text-center">
+<div class="w-8 h-8 rounded-full bg-rose-200 text-brand-red flex items-center justify-center mb-1">
+<i class="fa-regular fa-clock"></i>
+</div>
+<span class="text-xs text-slate-500 font-semibold">Chờ chấm</span>
+<span class="text-xl font-black text-brand-red mt-0.5" data-queue-stat="true">0</span>
+<span class="text-[10px] text-slate-400 font-medium">bài làm</span>
+</div>
+<!-- Đang xử lý -->
+<div class="bg-blue-50/70 border border-blue-200 rounded-xl p-3 flex flex-col items-center justify-center text-center">
+<div class="w-8 h-8 rounded-full bg-blue-200 text-blue-600 flex items-center justify-center mb-1 animate-spin">
+<i class="fa-solid fa-gear"></i>
+</div>
+<span class="text-xs text-blue-700 font-semibold">Đang xử lý</span>
+<span class="text-xl font-black text-blue-700 mt-0.5" data-queue-stat="true">0</span>
+<span class="text-[10px] text-blue-500 font-medium">AI OCR &amp; Rubric</span>
+</div>
+<!-- Hoàn thành -->
+<div class="bg-emerald-50/70 border border-emerald-200 rounded-xl p-3 flex flex-col items-center justify-center text-center">
+<div class="w-8 h-8 rounded-full bg-emerald-200 text-emerald-600 flex items-center justify-center mb-1">
+<i class="fa-solid fa-circle-check"></i>
+</div>
+<span class="text-xs text-emerald-700 font-semibold">Hoàn thành</span>
+<span class="text-xl font-black text-emerald-700 mt-0.5" data-queue-stat="true">0</span>
+<span class="text-[10px] text-emerald-500 font-medium">đã xong</span>
+</div>
+<!-- Lỗi xử lý -->
+<div class="bg-amber-50/70 border border-amber-200 rounded-xl p-3 flex flex-col items-center justify-center text-center">
+<div class="w-8 h-8 rounded-full bg-amber-200 text-amber-600 flex items-center justify-center mb-1">
+<i class="fa-solid fa-triangle-exclamation"></i>
+</div>
+<span class="text-xs text-amber-700 font-semibold">Lỗi xử lý</span>
+<span class="text-xl font-black text-amber-700 mt-0.5" data-queue-stat="true">0</span>
+<span class="text-[10px] text-amber-600 font-medium">ảnh mờ / chụp lệch</span>
+</div>
+</div>
+</div>
+<!-- Điểm AI vs Điểm giáo viên -->
+<div class="bg-white border border-rose-100 rounded-2xl p-4 shadow-sm flex flex-col">
+<div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-2">
+<div class="flex items-center gap-2 text-brand-red font-bold">
+<div class="w-7 h-7 rounded-lg bg-rose-100 text-brand-red flex items-center justify-center text-xs">
+<i class="fa-solid fa-scale-balanced"></i>
+</div>
+<span>Điểm hai đợt · Học sinh lớp đang chọn</span>
+</div>
+<button class="text-xs text-brand-red font-semibold hover:underline" onclick="switchTab('approval')">
+                Xem chi tiết <i class="fa-solid fa-arrow-right text-[10px]"></i>
+</button>
+</div>
+<!-- Mini Comparison Table -->
+<div class="overflow-x-auto flex-1 custom-scrollbar">
+<table class="w-full text-left text-xs" id="overview-score-table"><thead><tr><th>Học sinh</th><th>Toán Đ1</th><th>Toán Đ2</th><th>TV Đ1</th><th>TV Đ2</th></tr></thead><tbody id="overview-score-body"></tbody></table>
+</div>
+</div>
+<!-- Hoạt động gần đây -->
+<div class="bg-white border border-rose-100 rounded-2xl p-4 shadow-sm flex flex-col">
+<div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-2">
+<div class="flex items-center gap-2 text-brand-red font-bold">
+<div class="w-7 h-7 rounded-lg bg-rose-100 text-brand-red flex items-center justify-center text-xs">
+<i class="fa-solid fa-clock-rotate-left"></i>
+</div>
+<span>Hoạt động gần đây</span>
+</div>
+<span class="text-xs text-slate-400 font-medium">Hôm nay</span>
+</div>
+<!-- Activity List -->
+<p class="text-xs">Đã nhập bảng điểm 2 đợt cho 3 lớp. Mọi sửa điểm lưu trên trình duyệt hiện tại.</p><p class="text-xs">Lớp 5A3 đã có nhận xét và phiếu bài tập theo từng học sinh. Xem tại Phiếu BT cá nhân hóa hoặc hồ sơ học sinh.</p></div>
+</div>
+<div class="bg-white border border-rose-100 rounded-2xl p-4 shadow-sm">
+<div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+<div class="flex items-center gap-2 text-brand-red font-bold">
+<div class="w-7 h-7 rounded-lg bg-rose-100 text-brand-red flex items-center justify-center text-xs">
+<i class="fa-solid fa-chart-simple"></i>
+</div>
+<span>Thống kê lớp đang chọn · Điểm thực tế</span>
+</div>
+<button class="text-xs text-brand-red font-semibold hover:underline" onclick="switchTab('progress')">
+              Xem chi tiết báo cáo <i class="fa-solid fa-arrow-right text-[10px]"></i>
+</button>
+</div>
+<!-- 4 Visual Charts in a row -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+<!-- Chart 1: Điểm trung bình theo lớp -->
+<div class="bg-slate-50/70 border border-slate-200/80 rounded-xl p-3 flex flex-col">
+<span class="text-xs font-bold text-slate-700 mb-2">Điểm trung bình · Đợt 1 và 2</span>
+<div class="relative">
+<div aria-label="Biểu đồ số liệu" class="html-chart" id="chart-class-avg"></div>
+</div>
+</div>
+<!-- Chart 2: Phân bổ kết quả -->
+<div class="bg-slate-50/70 border border-slate-200/80 rounded-xl p-3 flex flex-col">
+<span class="text-xs font-bold text-slate-700 mb-2">Phổ điểm · Đợt đang chọn</span>
+<div class="relative items-center justify-center">
+<div aria-label="Biểu đồ số liệu" class="html-chart" id="chart-distribution"></div>
+</div>
+</div>
+<!-- Chart 3: Tỷ lệ đạt qua các lần kiểm tra -->
+<div class="bg-slate-50/70 border border-slate-200/80 rounded-xl p-3 flex flex-col">
+<span class="text-xs font-bold text-slate-700 mb-2">Lượt điểm ≥ 5 · Đợt 1 và 2</span>
+<div class="relative">
+<div aria-label="Biểu đồ số liệu" class="html-chart" id="chart-trends"></div>
+</div>
+</div>
+<!-- Chart 4: Tiến độ chấm bài (Donut gauge) -->
+<div class="bg-slate-50/70 border border-slate-200/80 rounded-xl p-3 flex flex-col justify-between">
+<span class="text-xs font-bold text-slate-700 mb-1">Độ đầy đủ dữ liệu điểm</span>
+<div class="flex items-center justify-center gap-3 my-auto"><div class="html-chart" id="chart-gauge"></div></div>
+<button class="w-full mt-2 bg-brand-red hover:bg-brand-darkred text-white text-xs font-bold py-1.5 rounded-lg transition-colors" onclick="startBatchGrading()">Mở quy trình chấm bài</button>
+</div>
+</div>
+</div>
+<div class="bg-rose-50 border border-rose-200 rounded-2xl p-4 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+<div class="flex items-center gap-3.5">
+<div class="w-12 h-12 rounded-2xl bg-brand-red text-white flex items-center justify-center text-2xl flex-shrink-0 shadow-sm">
+<i class="fa-solid fa-gamepad"></i>
+</div>
+<div>
+<h4 class="text-sm font-black text-brand-red">Chế độ Demo / Fallback hệ thống</h4>
+<p class="text-xs text-slate-600">Xem bài mẫu mô phỏng hoặc tải bài thật để chấm bằng OpenAI. Admin duyệt trước khi cập nhật sổ điểm.</p>
+</div>
+</div>
+<div class="flex flex-wrap items-center gap-2">
+<button class="bg-brand-red hover:bg-brand-darkred text-white text-xs font-bold px-4 py-2 rounded-xl shadow transition-colors flex items-center gap-1.5" onclick="activateDemoMode()">
+<i class="fa-solid fa-play"></i>
+<span>Bật chế độ Demo</span>
+</button>
+<button class="bg-white hover:bg-rose-100 text-brand-red border border-rose-200 text-xs font-bold px-3.5 py-2 rounded-xl transition-colors flex items-center gap-1.5" onclick="useFallbackData()">
+<i class="fa-solid fa-arrows-rotate"></i>
+<span>Sử dụng dữ liệu dự phòng</span>
+</button>
+</div>
+</div>
+</div>
+<!-- ================= SECTION 2: CLASSES & PROGRESS TRACKING (Theo dõi tiến độ học tập) ================= -->
+<div class="tab-content hidden space-y-4" id="tab-classes">
+<!-- Header -->
+<div class="bg-white border border-rose-100 rounded-2xl p-4 shadow-sm flex flex-wrap items-center justify-between gap-3">
+<div>
+<h2 class="text-lg font-black text-brand-red flex items-center gap-2">
+<i class="fa-solid fa-chalkboard-user"></i>Danh Sách Học Sinh &amp; Kết Quả — <span class="active-class-label"></span></h2>
+<p class="text-xs text-slate-500">Điểm nguồn theo đợt 1 và đợt 2 • —: chưa có dữ liệu • Δ: đợt 2 − đợt 1</p>
+</div>
+<div class="flex items-center gap-2">
+<button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow transition-colors flex items-center gap-1.5" onclick="exportGradebookExcel(currentClass, 'TOAN')">
+<i class="fa-solid fa-file-excel"></i>
+<span>Xuất Sổ Điểm Toán</span>
+</button>
+<button class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow transition-colors flex items-center gap-1.5" onclick="exportGradebookExcel(currentClass, 'TIENG_VIET')">
+<i class="fa-solid fa-file-excel"></i>
+<span>Xuất Sổ Điểm Tiếng Việt</span>
+</button>
+<button class="bg-brand-red hover:bg-brand-darkred text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow transition-colors flex items-center gap-1.5" onclick="switchTab('personalized')">
+<i class="fa-solid fa-print"></i>
+<span>In Phiếu BT Cá Nhân Hóa</span>
+</button>
+</div>
+</div>
+<div class="bg-white border border-rose-100 rounded-2xl shadow-sm overflow-hidden">
+<div class="p-3 bg-rose-50/50 border-b border-rose-100 flex flex-wrap items-center justify-between gap-2 text-xs">
+<div class="flex items-center gap-2">
+<span class="font-bold text-slate-700">Bộ lọc môn:</span>
+<button class="px-2.5 py-1 rounded bg-brand-red text-white font-bold text-[11px]" onclick="filterGradebookTable('ALL')">Cả 2 môn</button>
+<button class="px-2.5 py-1 rounded bg-white text-slate-600 hover:bg-rose-100 text-[11px] font-bold border border-rose-200" onclick="filterGradebookTable('TOAN')">Chỉ môn Toán</button>
+<button class="px-2.5 py-1 rounded bg-white text-slate-600 hover:bg-rose-100 text-[11px] font-bold border border-rose-200" onclick="filterGradebookTable('TIENG_VIET')">Chỉ môn Tiếng Việt</button>
+</div>
+<div class="text-slate-500 font-medium">Hiển thị <span id="student-count-badge"></span> hồ sơ theo tên nguồn</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left text-xs border-collapse">
+<thead><tr><th class="p-3" scope="col">STT</th><th class="p-3" scope="col">Mã HS</th><th class="p-3" scope="col">Họ và tên</th><th class="p-3" scope="col">Toán Đợt 1</th><th class="p-3" scope="col">Toán Đợt 2</th><th class="p-3" scope="col">Toán Δ</th><th class="p-3" scope="col">TV Đợt 1</th><th class="p-3" scope="col">TV Đợt 2</th><th class="p-3" scope="col">TV Δ</th><th class="p-3" scope="col">Đối chiếu nguồn</th><th class="p-3" scope="col">Hành động</th></tr></thead>
+<tbody class="divide-y divide-slate-100" id="student-table-body">
+<!-- Dynamically filled via JS -->
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- ================= SECTION 3: PROGRESS TRACKING (Longitudinal 2 subjects) ================= -->
+<div class="tab-content hidden space-y-4" id="tab-progress">
+<div class="bg-white border border-rose-100 rounded-2xl p-4 shadow-sm">
+<div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3 mb-4">
+<div>
+<h2 class="text-lg font-black text-brand-red flex items-center gap-2">
+<i class="fa-solid fa-arrow-trend-up"></i>
+                Theo Dõi Lộ Trình Tiến Bộ 2 Môn (Toán &amp; Tiếng Việt)
+              </h2>
+<p class="text-xs text-slate-500">So sánh hai đợt đã cung cấp. Trung bình từng đợt chỉ tính các ô có điểm.</p>
+</div>
+<span class="text-xs bg-emerald-100 text-emerald-800 font-bold px-3 py-1 rounded-full" id="progress-summary">
+              Tỷ lệ tiến bộ lớp đang chọn: +14.2% qua các kỳ
+            </span>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+<!-- Progress Line Chart -->
+<div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+<h4 class="text-xs font-bold text-slate-700 mb-2 flex items-center justify-between">
+<span>Điểm trung bình qua đợt 1 và đợt 2</span>
+<span class="text-[10px] text-slate-400 font-normal">Thang điểm 10</span>
+</h4>
+<div class="">
+<div aria-label="Biểu đồ số liệu" class="html-chart" id="chart-subject-comparison"></div>
+</div>
+</div>
+<!-- Subject Skill Mastery Matrix -->
+<div class="bg-slate-50 p-4 rounded-xl border border-slate-200 flex flex-col justify-between">
+<div><h4 class="font-bold">Tiến bộ theo cặp điểm cùng học sinh, cùng môn</h4><div id="paired-summary"></div><p class="text-xs">Chỉ tính khi có đủ hai đợt. Bảng nguồn không có điểm theo kỹ năng để suy ra lỗi kiến thức.</p></div>
+<div class="mt-4 pt-3 border-t border-slate-200 flex justify-end">
+<button class="text-xs bg-brand-red text-white font-bold px-3 py-1.5 rounded-xl shadow hover:bg-brand-darkred" onclick="switchTab('personalized')">
+                  Tạo phiếu bài tập bù đắp kỹ năng yếu
+                </button>
+</div>
+</div>
+</div>
+<div class="table-scroll" id="progress-data-table"></div><h3 class="font-bold mt-4">Biểu đồ từng học sinh · Hai đợt chấm</h3><label for="student-chart-select">Chọn học sinh: </label><select id="student-chart-select" onchange="selectChartStudent(this.value)"></select><div class="html-chart" id="chart-student"></div></div>
+</div>
+<!-- ================= SECTION 4: UPLOAD & PROCESSING (Step 1-3 from PDF) ================= -->
+<div class="tab-content hidden space-y-4" id="tab-upload"><section class="ai-panel" id="ai-settings">
+<h2>Kết nối OpenAI &amp; thiết lập chấm bài</h2>
+<p>Tải một PDF bài làm của cả lớp cho một môn. AI nhận diện học sinh, tách các trang bài làm và đề xuất điểm; admin duyệt trước khi lưu vào sổ.</p>
+<div class="ai-form-grid"><label>API key OpenAI <input autocomplete="off" id="openai-api-key" oninput="AI.keyChanged()" placeholder="Nhập khóa của bạn trong phiên này" spellcheck="false" type="password"/></label>
+<label>Model <input aria-describedby="ai-model-help" autocomplete="off" id="openai-model" spellcheck="false" value="gpt-4.1"/></label></div>
+<p id="ai-model-help">Model cần hỗ trợ ảnh, Responses API và kết quả có cấu trúc. Có thể đổi theo quyền truy cập của tài khoản.</p>
+<div class="ai-actions"><button class="action-button" id="ai-test-connection" onclick="testAIConnection()" type="button">Kiểm tra kết nối</button><button onclick="AI.forgetKey()" type="button">Xóa khóa khỏi phiên</button><output aria-live="polite" id="ai-connection-status">Chưa kiểm tra kết nối</output></div>
+<details><summary>Khóa API và dữ liệu gửi đi</summary><p>Khóa không được ghi vào tệp dự án, lịch sử chấm hay bộ nhớ lưu lâu dài. Khóa vẫn có thể được truy cập trong trình duyệt; chỉ nhập trên thiết bị và trang bạn tin cậy. Trang tĩnh không bảo vệ được khóa chung cho nhiều người.</p><p>Khi bấm chấm, bài làm, tên đọc trên bài, đáp án và thang điểm được gửi tới OpenAI; sử dụng API có tính phí theo tài khoản. Bài gốc chỉ giữ trong phiên. Kết quả và điểm đã duyệt lưu trên trình duyệt này.</p></details>
+</section>
+<div class="bg-white border border-rose-100 rounded-2xl p-5 shadow-sm">
+<div class="max-w-3xl mx-auto space-y-4">
+<div class="text-center">
+<h2 class="text-xl font-extrabold text-brand-red">Tải Lên Bài Kiểm Tra Viết Tay Của Học Sinh</h2>
+<p class="text-xs text-slate-500 mt-1">Chọn lớp, môn và đợt rồi tải PDF của cả lớp. Không cần chọn học sinh trước khi chấm. PDF có thể đảo thứ tự học sinh. Hệ thống tự ghép theo họ tên trong lớp; bỏ qua bài thiếu tên hoặc ngoài danh sách; bài trùng lấy điểm cao nhất trong cùng môn và đợt.</p>
+</div>
+<!-- Selection controls -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+<div>
+<label class="block text-xs font-bold text-slate-700 mb-1">Chọn Lớp học</label>
+<select class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-800" id="upload-class-select" onchange="changeActiveGlobalClass(this.value)"><option value="3A4">Lớp 3 — 3A4 (28 tên/môn)</option><option value="4">Lớp 4 (28 tên/môn)</option><option value="5A3">Lớp 5 — 5A3 (30 tên/môn)</option></select>
+</div>
+<div>
+<label class="block text-xs font-bold text-slate-700 mb-1">Chọn Môn học</label>
+<select class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-800" id="upload-subject-select" onchange="setFilterSubject(this.value)">
+<option selected="" value="TOAN">Môn Toán (KNTT)</option>
+<option value="TIENG_VIET">Môn Tiếng Việt (KNTT)</option>
+</select>
+</div>
+<div><label for="upload-round-select">Đợt chấm</label><select id="upload-round-select" onchange="setRound(this.value)"><option value="0">Đợt 1</option><option selected="" value="1">Đợt 2</option></select></div>
+</div><fieldset class="ai-panel ai-mode-picker"><legend>Chế độ đáp án &amp; thang điểm</legend><label><input checked="" name="ai-grading-mode" onchange="AI.setMode(this.value)" type="radio" value="auto"/> AI tự đề xuất từ phiếu bài tập</label><p>Không cần nhập đáp án. AI đọc đề, tự giải và đề xuất thang điểm /10 phù hợp lớp rồi chấm. Thang điểm đề xuất sẽ xuất hiện trong từng kết quả để giáo viên kiểm tra.</p><label><input name="ai-grading-mode" onchange="AI.setMode(this.value)" type="radio" value="manual"/> Dùng đáp án &amp; thang điểm của giáo viên</label></fieldset><section class="ai-rubric" id="ai-rubric-editor"><div hidden="True" id="ai-manual-rubric-fields"><h3>Đáp án &amp; thang điểm cho <span id="ai-rubric-scope"></span></h3><p>Thêm từng câu hoặc tiêu chí. Tổng điểm tối đa phải bằng 10. Đáp án có thể ghi cách chấm điểm từng phần; với Tiếng Việt, ghi tiêu chí nội dung, diễn đạt, chính tả.</p><div class="table-scroll"><table class="data-table"><thead><tr><th>Câu / tiêu chí</th><th>Đáp án và cách cho điểm</th><th>Điểm tối đa</th><th>Thao tác</th></tr></thead><tbody id="ai-rubric-rows"></tbody></table></div><div class="ai-actions"><button onclick="AI.addCriterion()" type="button">+ Thêm tiêu chí</button><button class="action-button" onclick="AI.saveRubric()" type="button">Lưu thang điểm</button><output aria-live="polite" id="ai-rubric-total"></output></div></div>
+<label>Tệp đề / đáp án bổ sung (tùy chọn, một PDF/ảnh) <input accept=".pdf,.jpg,.jpeg,.png" id="ai-reference-file" onchange="AI.setReference(this)" type="file"/></label><div class="ai-actions"><span id="ai-reference-name">Chưa chọn tệp tham chiếu</span><button onclick="AI.clearReference()" type="button">Bỏ tệp tham chiếu</button></div>
+</section>
+<!-- Big Upload Dropzone -->
+<div class="border-2 border-dashed border-rose-300 hover:border-brand-red bg-rose-50/40 hover:bg-rose-50 rounded-2xl p-8 text-center transition-all cursor-pointer flex flex-col items-center justify-center" id="drop-area">
+<div class="w-16 h-16 rounded-full bg-brand-red text-white flex items-center justify-center text-3xl shadow-md mb-3 animate-pulse-gentle">
+<i class="fa-solid fa-cloud-arrow-up"></i>
+</div>
+<h3 class="text-sm font-bold text-slate-800">Kéo thả PDF bài làm của cả lớp vào đây</h3>
+<p class="text-xs text-slate-500 mt-1 max-w-md">Mỗi PDF gồm bài của một lớp, một môn và một đợt. Ảnh JPG/PNG cũng được hỗ trợ. Tệp gốc chỉ giữ trong phiên này.</p>
+<div class="mt-4 flex items-center gap-3">
+<button class="bg-brand-red hover:bg-brand-darkred text-white text-xs font-bold px-5 py-2.5 rounded-xl shadow transition-colors flex items-center gap-2" onclick="document.getElementById('file-upload-input').click()">
+<i class="fa-solid fa-folder-open"></i> Chọn tập tin từ máy tính
+                </button>
+<button class="bg-white hover:bg-rose-100 text-brand-red border border-rose-200 text-xs font-bold px-4 py-2.5 rounded-xl transition-colors" onclick="loadSamplePapersBatch()">
+<i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Nạp nhanh 8 bài thi mẫu
+                </button>
+</div>
+<input accept=".jpg,.jpeg,.png,.pdf" aria-label="Chọn ảnh hoặc PDF bài làm" class="hidden" id="file-upload-input" multiple="" onchange="handleFileSelection(event)" type="file"/>
+</div>
+<!-- Previews of queued uploads -->
+<div>
+<div class="flex items-center justify-between text-xs font-bold text-slate-700 mb-2">
+<span>Danh sách tệp lớp (<span id="upload-count-badge">0</span> tệp):</span>
+<button class="text-rose-600 hover:underline" onclick="clearUploadQueue()">Xóa tất cả</button>
+</div>
+<div class="ai-upload-list" id="upload-thumbnails-grid">
+<!-- Thumbs populated by JS -->
+</div>
+</div>
+<!-- Big Start Grading Button -->
+<div class="ai-actions">
+<label class="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+<input checked="" class="rounded text-brand-red focus:ring-brand-red" id="ai-feedback-enabled" type="checkbox"/>
+<span>Sinh thêm lời phê và bài tập rèn luyện (AI luôn đọc và chấm bài)</span>
+</label>
+<button class="bg-brand-red hover:bg-brand-darkred text-white text-sm font-black px-6 py-3 rounded-xl shadow-lg transition-transform hover:scale-105 flex items-center gap-2 action-button" onclick="startAIGradingFlow()">
+<i class="fa-solid fa-bolt"></i> BẮT ĐẦU CHẤM BÀI BẰNG AI-AGENT
+              </button>
+</div>
+</div>
+</div>
+</div>
+<!-- ================= SECTION 5: QUEUE & REALTIME GRADING (Hàng đợi chấm) ================= -->
+<div class="tab-content hidden space-y-4" id="tab-queue"><p class="source-notice">Kết quả OpenAI là điểm đề xuất. Xem bài gốc, kiểm tra từng câu rồi duyệt vào đúng lớp, môn và đợt.</p>
+<div class="bg-white border border-rose-100 rounded-2xl p-5 shadow-sm">
+<div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4 mb-4">
+<div>
+<h2 class="text-lg font-black text-brand-red flex items-center gap-2">Quy Trình Chấm Bài Tự Động AI-Agent</h2>
+<p class="text-xs text-slate-500">Chọn lớp → nhận diện học sinh và trang PDF → đề xuất hoặc áp dụng thang điểm → chấm từng bài → admin duyệt vào sổ.</p>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-xs bg-blue-100 text-blue-700 font-bold px-3 py-1 rounded-full flex items-center gap-1.5" id="ai-batch-status">Chưa có đợt chấm đang chạy</span>
+</div>
+</div>
+<!-- 5-Step Pipeline visual -->
+<div class="grid grid-cols-1 sm:grid-cols-5 gap-2 text-center text-xs mb-6"><div class="ai-step" data-ai-step="1"><strong>1. Lớp / môn / đợt</strong><p>Một PDF của cả lớp</p></div><div class="ai-step" data-ai-step="2"><strong>2. Nhận diện học sinh</strong><p>Tách trang theo bài làm</p></div><div class="ai-step" data-ai-step="3"><strong>3. Đáp án &amp; chấm điểm</strong><p>AI đề xuất hoặc dùng barem</p></div><div class="ai-step" data-ai-step="4"><strong>4. Admin duyệt</strong><p>Kiểm tra thang điểm và điểm</p></div><div class="ai-step" data-ai-step="5"><strong>5. Sổ điểm</strong><p>Biểu đồ, Excel, phiếu in</p></div></div><div class="ai-actions"><button class="action-button action-button" onclick="startAIGradingFlow()">Chấm các bài sẵn sàng</button><button disabled="" id="ai-stop-button" onclick="AI.stop()">Dừng chấm</button><button onclick="AI.openSettings()">API key &amp; đáp án</button></div><p aria-live="polite" id="ai-queue-summary"></p>
+<!-- Detailed Live Queue Table -->
+<div class="table-scroll">
+<table class="w-full text-left text-xs">
+<thead class="bg-slate-50 text-slate-600 font-bold border-b border-slate-200"><tr><th class="p-3">Tệp bài làm</th><th class="p-3">Lớp / Học sinh nhận diện</th><th class="p-3">Môn / đợt</th><th class="p-3">Tiến trình</th><th class="p-3">Điểm đề xuất</th><th class="p-3">Thao tác</th></tr></thead>
+<tbody class="divide-y divide-slate-100" id="queue-table-body">
+<!-- Dynamically updated -->
+</tbody>
+</table>
+</div>
+</div>
+<details class="ai-panel"><summary>Nhật ký chấm bài</summary><div class="space-y-1 overflow-y-auto max-h-56 custom-scrollbar text-[11px] leading-relaxed" id="ai-terminal-log"><p>Sẵn sàng. Chưa gửi yêu cầu OpenAI.</p></div></details></div>
+<!-- ================= SECTION 6: RESULTS & DETAILED REVIEW (Chi tiết bài làm AI) ================= -->
+<div class="tab-content hidden space-y-4" id="tab-results">
+<div class="bg-white border border-rose-100 rounded-2xl p-5 shadow-sm">
+<div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3 mb-4">
+<div>
+<div class="flex items-center gap-2">
+<h2 class="text-lg font-black text-brand-red" id="detail-student-name">—</h2>
+<span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-0.5 rounded-full" id="detail-badge-score">—</span>
+</div>
+<p class="text-xs text-slate-500 mt-0.5">Hồ sơ điểm Toán và Tiếng Việt qua hai đợt chấm</p>
+</div>
+<!-- Student switch buttons -->
+<div class="flex items-center gap-2">
+<button aria-label="Học sinh trước" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-rose-100 text-slate-700 flex items-center justify-center text-xs" onclick="navigateStudentDetail(-1)">
+<i class="fa-solid fa-chevron-left"></i>
+</button>
+<span class="text-xs font-bold text-slate-600" id="detail-counter">—</span>
+<button aria-label="Học sinh sau" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-rose-100 text-slate-700 flex items-center justify-center text-xs" onclick="navigateStudentDetail(1)">
+<i class="fa-solid fa-chevron-right"></i>
+</button>
+<button class="bg-brand-red hover:bg-brand-darkred text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow ml-2 flex items-center gap-1.5" onclick="openApprovalModal(currentSelectedStudentId)">
+<i class="fa-solid fa-pencil"></i> Chỉnh sửa &amp; Duyệt điểm
+              </button>
+</div>
+</div>
+<!-- Split Screen: Left = Annotated Test Paper, Right = Detailed Rubric Breakdown -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-5"><div class="lg:col-span-12"><p>TRƯỜNG TIỂU HỌC VĂN KHÊ • admin</p><div id="student-detail-data"></div><section class="ai-panel" hidden="" id="ai-student-reports"></section><p class="mt-3" id="detail-ai-comment"></p><section class="remedial-profile" hidden="" id="detail-remedial-material"></section><p class="text-xs mt-3">Phiếu in gồm nội dung đã được cung cấp cho học sinh và bài tập từ kết quả OpenAI đã duyệt, nếu có.</p><button class="action-button" onclick="printSingleRemedialSheet(currentSelectedStudentId)">Xem &amp; In phiếu rèn luyện của em này</button></div></div>
+</div>
+</div>
+<!-- ================= SECTION 7: TEACHER APPROVAL & OVERRIDE (Bước 4 trong PDF) ================= -->
+<div class="tab-content hidden space-y-4" id="tab-approval">
+<div class="bg-white border border-rose-100 rounded-2xl p-5 shadow-sm">
+<div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4 mb-4">
+<div>
+<h2 class="text-lg font-black text-brand-red flex items-center gap-2">
+<i class="fa-solid fa-circle-check"></i>
+                Trung Tâm Phê Duyệt &amp; Kiểm Soát Điểm Của Giáo Viên
+              </h2>
+<p class="text-xs text-slate-500">
+                AI đóng vai trò trợ lý đề xuất điểm số. Quyền quyết định cuối cùng luôn thuộc về thầy cô giáo!
+              </p>
+</div>
+<div class="flex items-center gap-2">
+<button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-xl shadow transition-colors flex items-center gap-1.5" onclick="batchApproveAll()">
+<i class="fa-solid fa-check-double"></i> Duyệt tất cả các bài khớp điểm
+              </button>
+</div>
+</div>
+<!-- Pending Approval List -->
+<section class="ai-panel" hidden="" id="ai-pending-reviews"></section><div class="space-y-3" id="approval-cards-container">
+<!-- Dynamically populated cards -->
+</div>
+</div>
+</div>
+<!-- ================= SECTION 8: PERSONALIZED REMEDIAL WORKSHEETS (Bước 5 trong PDF) ================= -->
+<div class="tab-content hidden space-y-4" id="tab-personalized">
+<div class="bg-white border border-rose-100 rounded-2xl p-5 shadow-sm">
+<div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4 mb-4">
+<div>
+<div class="flex items-center gap-2">
+<h2 class="text-lg font-black text-brand-red flex items-center gap-2">
+<i class="fa-solid fa-file-circle-check text-emerald-600"></i>
+                  Phiếu Bài Tập Rèn Luyện Cá Nhân Hóa (Theo Lỗ Hổng Kiến Thức)
+                </h2>
+<span class="bg-rose-100 text-brand-red font-bold text-xs px-2 py-0.5 rounded-full">Phiếu rèn luyện lớp đang chọn</span>
+</div>
+<p class="text-xs text-slate-500 mt-1">
+                Mỗi học sinh yếu phần nào được bù đắp đúng phần đó. Học sinh khá giỏi nhận bài tập tư duy mở rộng!
+              </p>
+</div>
+<!-- Print All Button (Trọng tâm Bước 5 trong PDF) -->
+<button class="bg-brand-red hover:bg-brand-darkred text-white text-xs font-black px-5 py-2.5 rounded-xl shadow-lg transition-transform hover:scale-105 flex items-center gap-2" onclick="printAllRemedialSheets()">
+<i class="fa-solid fa-print text-sm"></i>IN TẤT CẢ PHIẾU BÀI TẬP (LỚP ĐANG CHỌN)</button>
+</div>
+<!-- Grid of Student Worksheet Cards -->
+<section class="remedial-source-info" hidden="" id="remedial-source-info"></section><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="remedial-cards-container">
+<!-- Dynamically generated remedial worksheet previews -->
+</div>
+</div>
+</div>
+<!-- ================= SECTION 9: RUBRICS & EXAM MATRIX (Đề thi & Rubric) ================= -->
+
+<!-- ================= SECTION 10: ANALYTICS TAB ================= -->
+
+<!-- ================= SECTION 11: TEST PANEL (Chấm thử nghiệm AI Vision) ================= -->
+
+<!-- ================= SECTION 12: DEMO / FALLBACK ================= -->
+
+</main>
+</div>
+<!-- TEACHER APPROVAL MODAL -->
+<div class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden" id="modal-approval">
+<div class="bg-white rounded-2xl max-w-2xl w-full p-5 shadow-2xl border border-rose-100 space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
+<div class="flex items-center justify-between border-b border-slate-100 pb-3">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-lg bg-rose-100 text-brand-red flex items-center justify-center font-bold">
+<i class="fa-solid fa-pen-to-square"></i>
+</div>
+<div>
+<h3 class="font-black text-slate-800 text-base" id="modal-student-name">—</h3>
+<p class="text-[11px] text-slate-500"></p>
+<p id="modal-student-id"></p></div>
+</div>
+<button aria-label="Đóng" class="text-slate-400 hover:text-slate-600 text-lg" onclick="closeApprovalModal()">
+<i class="fa-solid fa-xmark"></i>
+</button>
+</div>
+<!-- Score adjustment row -->
+<div class="modal-selectors"><label>Môn <select id="approval-subject" onchange="refreshApprovalScore()"><option value="TOAN">Toán</option><option value="TIENG_VIET">Tiếng Việt</option></select></label><label>Đợt <select id="approval-round" onchange="refreshApprovalScore()"><option value="0">Đợt 1</option><option value="1">Đợt 2</option></select></label></div><div class="grid grid-cols-3 gap-3 text-center">
+<div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+<span class="text-xs font-semibold text-slate-500">Điểm nguồn ban đầu</span>
+<p class="text-2xl font-black text-slate-700 mt-1" id="modal-ai-score">8.5</p>
+<span class="text-[10px] text-slate-400">Bảng tổng hợp đã cung cấp</span>
+</div>
+<div class="bg-rose-50 p-3 rounded-xl border border-rose-200">
+<span class="text-xs font-semibold text-brand-red">Điểm Giáo viên sửa</span>
+<div class="flex items-center justify-center gap-2 mt-1">
+<input class="w-20 text-center font-black text-2xl text-brand-red bg-white border border-rose-300 rounded-lg p-1" id="modal-teacher-score-input" max="10" min="0" step="any" type="number" value="8.0"/>
+</div>
+<span class="text-[10px] text-brand-red font-medium">Thầy/cô có toàn quyền sửa</span>
+</div>
+<div class="bg-emerald-50 p-3 rounded-xl border border-emerald-200">
+<span class="text-xs font-semibold text-emerald-800">Điểm Chốt Cuối Cùng</span>
+<p class="text-2xl font-black text-emerald-700 mt-1" id="modal-final-score">8.0</p>
+<span class="text-[10px] text-emerald-600 font-bold">Lưu vào Sổ Điểm</span>
+</div>
+</div>
+<!-- Comment adjustment -->
+<div>
+<label class="block text-xs font-bold text-slate-700 mb-1">Lời phê của admin (tự nhập):</label>
+<textarea class="w-full text-xs text-slate-800 bg-slate-50 border border-slate-200 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-brand-red leading-relaxed" id="modal-comment-input" rows="3"></textarea>
+</div>
+<!-- Actions -->
+<div class="flex items-center justify-between pt-2 border-t border-slate-100">
+<button class="text-xs text-slate-500 hover:text-slate-800 font-semibold px-3 py-2" onclick="closeApprovalModal()">
+          Hủy bỏ
+        </button>
+<div class="flex items-center gap-2">
+<button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-xl shadow transition-colors flex items-center gap-1.5" onclick="saveStudentApproval(true)">
+<i class="fa-solid fa-check"></i> Xác Nhận &amp; Đánh Dấu Đã Duyệt
+          </button>
+</div>
+</div>
+</div>
+</div>
+<!-- PRINTABLE REMEDIAL WORKSHEET CONTAINER (For Step 5 in PDF) -->
+<div class="hidden" id="print-area">
+<!-- Will be filled by print generation logic -->
+</div>
+<!-- TOAST NOTIFICATION CONTAINER -->
+<div class="fixed bottom-5 right-5 z-50 bg-slate-900 text-white text-xs font-semibold px-4 py-3 rounded-xl shadow-2xl border border-slate-700 flex items-center gap-3 transform transition-all duration-300 translate-y-20 opacity-0 pointer-events-none" id="toast">
+<div class="text-brand-red text-base" id="toast-icon">
+<i class="fa-solid fa-circle-info"></i>
+</div>
+<span id="toast-message">Thông báo hệ thống</span>
+</div>
+<script defer="True" src="assets/vendor/xlsx.full.min.js"></script><script defer="True" src="assets/data.js"></script><script defer="" src="assets/remedial-data.js"></script><script defer="" src="assets/remedial.js"></script><script defer="True" src="assets/app.js"></script><dialog aria-labelledby="ai-review-title" class="ai-review-dialog" id="ai-review-dialog"><div class="ai-actions"><h2 id="ai-review-title">Kiểm tra bài chấm OpenAI</h2><button onclick="AI.closeReview()" type="button">Đóng</button></div><div id="ai-review-content"></div><form id="ai-review-form" onsubmit="event.preventDefault();AI.approveReview()"><label>Học sinh đã tự động ghép theo họ tên <select disabled="" id="ai-review-student"></select></label><label>Điểm admin chốt /10 <input id="ai-final-score" max="10" min="0" required="" step="any" type="number"/></label><label>Lời phê <textarea id="ai-final-comment" rows="3"></textarea></label><label id="ai-overwrite-label"><input id="ai-overwrite-confirm" type="checkbox"/> <span id="ai-overwrite-text"></span></label><p id="ai-review-error" role="alert"></p><button class="action-button" id="ai-approve-button" type="submit">Duyệt &amp; lưu vào sổ điểm</button></form></dialog><script defer="True" src="assets/vendor/pdf-lib.min.js"></script><script defer="True" src="assets/ai-grading.js"></script></body>
+</html>
