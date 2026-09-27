@@ -1,0 +1,26 @@
+[
+  {
+    "class": "3A4",
+    "students": 17,
+    "pages": 17,
+    "exercises": 82,
+    "maxHeightPx": 693.890625,
+    "contentIntact": true
+  },
+  {
+    "class": "4A6",
+    "students": 22,
+    "pages": 22,
+    "exercises": 116,
+    "maxHeightPx": 732.015625,
+    "contentIntact": true
+  },
+  {
+    "class": "5A3",
+    "students": 23,
+    "pages": 23,
+    "exercises": 132,
+    "maxHeightPx": 674.828125,
+    "contentIntact": true
+  }
+]

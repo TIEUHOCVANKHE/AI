@@ -1,0 +1,62 @@
+[
+  {
+    "name": "Sửa tay hoàn tác điểm/lời phê/duyệt khi không lưu được",
+    "ok": true
+  },
+  {
+    "name": "Duyệt hàng loạt hoàn tác khi không lưu được",
+    "ok": true
+  },
+  {
+    "name": "Khóa trống không gửi API",
+    "ok": true
+  },
+  {
+    "name": "Khóa chứa khoảng trắng bị chặn",
+    "ok": true
+  },
+  {
+    "name": "Nút kiểm tra kết nối",
+    "ok": true
+  },
+  {
+    "name": "Xóa khóa khỏi phiên",
+    "ok": true
+  },
+  {
+    "name": "Barem lớp khác độc lập",
+    "ok": true
+  },
+  {
+    "name": "Trở lại đúng barem",
+    "ok": true
+  },
+  {
+    "name": "Barem lưu qua tải lại",
+    "ok": true
+  },
+  {
+    "name": "Đọc nguyên ảnh PNG và JPEG",
+    "ok": true
+  },
+  {
+    "name": "Chặn PDF quá 120 trang",
+    "ok": true
+  },
+  {
+    "name": "Kéo thả nhận tệp",
+    "ok": true
+  },
+  {
+    "name": "Đổi lớp của tệp trước khi chấm",
+    "ok": true
+  },
+  {
+    "name": "Không dùng lại điểm của phiên bản danh sách cũ",
+    "ok": true
+  },
+  {
+    "name": "Sao lưu riêng cả ba lớp",
+    "ok": true
+  }
+]

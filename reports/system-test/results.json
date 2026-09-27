@@ -1,0 +1,559 @@
+{
+  "current": "Hoàn tất: 138 đạt, 0 chưa đạt",
+  "checks": [
+    {
+      "name": "Lưu đủ mẫu nhận xét và 3 bài tập",
+      "ok": true
+    },
+    {
+      "name": "Một yêu cầu chấm gồm nhận xét và bài tập đúng lớp/môn",
+      "ok": true
+    },
+    {
+      "name": "Hiển thị nhãn đậm và Bài 1–3",
+      "ok": true
+    },
+    {
+      "name": "Phiếu xem lại có đủ 3 bài tập",
+      "ok": true
+    },
+    {
+      "name": "Phiếu in ưu tiên bài tập mới, không chèn bài AI cũ",
+      "ok": true
+    },
+    {
+      "name": "Phiếu thiếu tài liệu dùng nhận xét và bài tập AI đã lưu",
+      "ok": true
+    },
+    {
+      "name": "Chấp nhận đúng giới hạn 150/300 từ, không cắt đề bài",
+      "ok": true
+    },
+    {
+      "name": "Lịch sử trước cập nhật vẫn mở được",
+      "ok": true
+    },
+    {
+      "name": "Chặn nhận xét quá 150 từ và không tự gọi lại",
+      "ok": true
+    },
+    {
+      "name": "Chặn bài tập quá tổng 300 từ và không tự gọi lại",
+      "ok": true
+    },
+    {
+      "name": "Chặn chỉ có 2 bài tập và không tự gọi lại",
+      "ok": true
+    },
+    {
+      "name": "Chặn đánh giá sai mẫu và không tự gọi lại",
+      "ok": true
+    },
+    {
+      "name": "Nguồn 62 học sinh, 248 điểm",
+      "ok": true
+    },
+    {
+      "name": "Toàn bộ tên/STT/điểm 3A4",
+      "ok": true
+    },
+    {
+      "name": "Toàn bộ tên/STT/điểm 4",
+      "ok": true
+    },
+    {
+      "name": "Toàn bộ tên/STT/điểm 5A3",
+      "ok": true
+    },
+    {
+      "name": "Đủ 8 mục điều hướng",
+      "ok": true
+    },
+    {
+      "name": "Mở trang overview",
+      "ok": true
+    },
+    {
+      "name": "Mở trang classes",
+      "ok": true
+    },
+    {
+      "name": "Mở trang progress",
+      "ok": true
+    },
+    {
+      "name": "Mở trang upload",
+      "ok": true
+    },
+    {
+      "name": "Mở trang queue",
+      "ok": true
+    },
+    {
+      "name": "Mở trang results",
+      "ok": true
+    },
+    {
+      "name": "Mở trang approval",
+      "ok": true
+    },
+    {
+      "name": "Mở trang personalized",
+      "ok": true
+    },
+    {
+      "name": "Không có nút gọi hàm thiếu",
+      "ok": true
+    },
+    {
+      "name": "3A4 / ALL / lần 1",
+      "ok": true
+    },
+    {
+      "name": "3A4 / ALL / lần 2",
+      "ok": true
+    },
+    {
+      "name": "3A4 / TOAN / lần 1",
+      "ok": true
+    },
+    {
+      "name": "3A4 / TOAN / lần 2",
+      "ok": true
+    },
+    {
+      "name": "3A4 / TIENG_VIET / lần 1",
+      "ok": true
+    },
+    {
+      "name": "3A4 / TIENG_VIET / lần 2",
+      "ok": true
+    },
+    {
+      "name": "4 / ALL / lần 1",
+      "ok": true
+    },
+    {
+      "name": "4 / ALL / lần 2",
+      "ok": true
+    },
+    {
+      "name": "4 / TOAN / lần 1",
+      "ok": true
+    },
+    {
+      "name": "4 / TOAN / lần 2",
+      "ok": true
+    },
+    {
+      "name": "4 / TIENG_VIET / lần 1",
+      "ok": true
+    },
+    {
+      "name": "4 / TIENG_VIET / lần 2",
+      "ok": true
+    },
+    {
+      "name": "5A3 / ALL / lần 1",
+      "ok": true
+    },
+    {
+      "name": "5A3 / ALL / lần 2",
+      "ok": true
+    },
+    {
+      "name": "5A3 / TOAN / lần 1",
+      "ok": true
+    },
+    {
+      "name": "5A3 / TOAN / lần 2",
+      "ok": true
+    },
+    {
+      "name": "5A3 / TIENG_VIET / lần 1",
+      "ok": true
+    },
+    {
+      "name": "5A3 / TIENG_VIET / lần 2",
+      "ok": true
+    },
+    {
+      "name": "Excel 3A4 ALL",
+      "ok": true
+    },
+    {
+      "name": "Excel 3A4 TOAN",
+      "ok": true
+    },
+    {
+      "name": "Excel 3A4 TIENG_VIET",
+      "ok": true
+    },
+    {
+      "name": "Excel 4 ALL",
+      "ok": true
+    },
+    {
+      "name": "Excel 4 TOAN",
+      "ok": true
+    },
+    {
+      "name": "Excel 4 TIENG_VIET",
+      "ok": true
+    },
+    {
+      "name": "Excel 5A3 ALL",
+      "ok": true
+    },
+    {
+      "name": "Excel 5A3 TOAN",
+      "ok": true
+    },
+    {
+      "name": "Excel 5A3 TIENG_VIET",
+      "ok": true
+    },
+    {
+      "name": "Chặn điểm 11",
+      "ok": true
+    },
+    {
+      "name": "Chặn điểm -1",
+      "ok": true
+    },
+    {
+      "name": "Lưu điểm 0",
+      "ok": true
+    },
+    {
+      "name": "Khôi phục điểm/lời phê/duyệt",
+      "ok": true
+    },
+    {
+      "name": "Ô trống không thành 0",
+      "ok": true
+    },
+    {
+      "name": "Trung bình bỏ qua ô trống",
+      "ok": true
+    },
+    {
+      "name": "Duyệt cả lớp đúng môn/đợt",
+      "ok": true
+    },
+    {
+      "name": "In đủ phiếu 3A4",
+      "ok": true
+    },
+    {
+      "name": "In riêng 1 em 3A4",
+      "ok": true
+    },
+    {
+      "name": "In đủ phiếu 4",
+      "ok": true
+    },
+    {
+      "name": "In riêng 1 em 4",
+      "ok": true
+    },
+    {
+      "name": "In đủ phiếu 5A3",
+      "ok": true
+    },
+    {
+      "name": "In riêng 1 em 5A3",
+      "ok": true
+    },
+    {
+      "name": "46 nhận xét lớp 5",
+      "ok": true
+    },
+    {
+      "name": "Phiếu kiểm tra lại có STT và 11 câu",
+      "ok": true
+    },
+    {
+      "name": "STT và dự phòng tên 3A4",
+      "ok": true
+    },
+    {
+      "name": "STT và dự phòng tên 4",
+      "ok": true
+    },
+    {
+      "name": "STT và dự phòng tên 5A3",
+      "ok": true
+    },
+    {
+      "name": "STT không hợp lệ",
+      "ok": true
+    },
+    {
+      "name": "Từ chối tệp rỗng/sai định dạng/quá lớn",
+      "ok": true
+    },
+    {
+      "name": "Chặn tệp trùng",
+      "ok": true
+    },
+    {
+      "name": "Demo không sửa điểm",
+      "ok": true
+    },
+    {
+      "name": "Dọn hàng đợi giữ điểm",
+      "ok": true
+    },
+    {
+      "name": "Nội dung chấm xuất hiện trong stream",
+      "ok": true
+    },
+    {
+      "name": "Chưa ghi điểm trước hoàn tất",
+      "ok": true
+    },
+    {
+      "name": "Hai vùng nhận diện",
+      "ok": true
+    },
+    {
+      "name": "Đảo trang, ngoài lớp, trùng và bằng điểm",
+      "ok": true
+    },
+    {
+      "name": "Phạm vi chấm không đổi khi đổi bộ lọc",
+      "ok": true
+    },
+    {
+      "name": "Một ảnh nguyên trang và một request mỗi trang",
+      "ok": true
+    },
+    {
+      "name": "Giáo viên sửa và duyệt AI",
+      "ok": true
+    },
+    {
+      "name": "Lưu AI/duyệt và khóa không lưu",
+      "ok": true
+    },
+    {
+      "name": "Dừng giữ trang đã xong",
+      "ok": true
+    },
+    {
+      "name": "Nhận lại file theo nội dung, chỉ chấm trang 2",
+      "ok": true
+    },
+    {
+      "name": "Tiếp tục hoàn tất",
+      "ok": true
+    },
+    {
+      "name": "Xử lý 401",
+      "ok": true
+    },
+    {
+      "name": "Xử lý 429",
+      "ok": true
+    },
+    {
+      "name": "Xử lý 500",
+      "ok": true
+    },
+    {
+      "name": "Xử lý mạng",
+      "ok": true
+    },
+    {
+      "name": "Xử lý stream thiếu kết thúc",
+      "ok": true
+    },
+    {
+      "name": "Xử lý JSON lỗi",
+      "ok": true
+    },
+    {
+      "name": "Xử lý barem sai",
+      "ok": true
+    },
+    {
+      "name": "Xử lý điểm vượt thang",
+      "ok": true
+    },
+    {
+      "name": "Xử lý thiếu bài tập",
+      "ok": true
+    },
+    {
+      "name": "Xử lý STT sai kiểu",
+      "ok": true
+    },
+    {
+      "name": "Xử lý từ chối",
+      "ok": true
+    },
+    {
+      "name": "Xử lý phản hồi cuối lệch",
+      "ok": true
+    },
+    {
+      "name": "Xử lý không đọc được",
+      "ok": true
+    },
+    {
+      "name": "Xử lý không đủ đề",
+      "ok": true
+    },
+    {
+      "name": "429 dừng cả lượt",
+      "ok": true
+    },
+    {
+      "name": "Tiếp tục sau 429",
+      "ok": true
+    },
+    {
+      "name": "Barem manual và điểm 0",
+      "ok": true
+    },
+    {
+      "name": "Vùng sai không được vẽ",
+      "ok": true
+    },
+    {
+      "name": "Gửi tài liệu tham chiếu riêng",
+      "ok": true
+    },
+    {
+      "name": "Thêm/bỏ tiêu chí barem",
+      "ok": true
+    },
+    {
+      "name": "Bỏ tiêu chí",
+      "ok": true
+    },
+    {
+      "name": "Hoàn tác khi bộ nhớ đầy",
+      "ok": true
+    },
+    {
+      "name": "Thử lưu lại không gọi AI",
+      "ok": true
+    },
+    {
+      "name": "Không thực thi HTML từ AI",
+      "ok": true
+    },
+    {
+      "name": "Không tràn ngang overview",
+      "ok": true
+    },
+    {
+      "name": "Không tràn ngang classes",
+      "ok": true
+    },
+    {
+      "name": "Không tràn ngang progress",
+      "ok": true
+    },
+    {
+      "name": "Không tràn ngang upload",
+      "ok": true
+    },
+    {
+      "name": "Không tràn ngang queue",
+      "ok": true
+    },
+    {
+      "name": "Không tràn ngang results",
+      "ok": true
+    },
+    {
+      "name": "Không tràn ngang approval",
+      "ok": true
+    },
+    {
+      "name": "Không tràn ngang personalized",
+      "ok": true
+    },
+    {
+      "name": "Mở offline đủ 62 em",
+      "ok": true
+    },
+    {
+      "name": "PDF file:// render offline",
+      "ok": true
+    },
+    {
+      "name": "Không lỗi JavaScript",
+      "ok": true
+    },
+    {
+      "name": "Không tài nguyên HTTP bị thiếu",
+      "ok": true
+    },
+    {
+      "name": "Sửa tay hoàn tác điểm/lời phê/duyệt khi không lưu được",
+      "ok": true
+    },
+    {
+      "name": "Duyệt hàng loạt hoàn tác khi không lưu được",
+      "ok": true
+    },
+    {
+      "name": "Khóa trống không gửi API",
+      "ok": true
+    },
+    {
+      "name": "Khóa chứa khoảng trắng bị chặn",
+      "ok": true
+    },
+    {
+      "name": "Nút kiểm tra kết nối",
+      "ok": true
+    },
+    {
+      "name": "Xóa khóa khỏi phiên",
+      "ok": true
+    },
+    {
+      "name": "Barem lớp khác độc lập",
+      "ok": true
+    },
+    {
+      "name": "Trở lại đúng barem",
+      "ok": true
+    },
+    {
+      "name": "Barem lưu qua tải lại",
+      "ok": true
+    },
+    {
+      "name": "Đọc nguyên ảnh PNG và JPEG",
+      "ok": true
+    },
+    {
+      "name": "Chặn PDF quá 120 trang",
+      "ok": true
+    },
+    {
+      "name": "Kéo thả nhận tệp",
+      "ok": true
+    },
+    {
+      "name": "Đổi lớp của tệp trước khi chấm",
+      "ok": true
+    },
+    {
+      "name": "Không dùng lại điểm của phiên bản danh sách cũ",
+      "ok": true
+    },
+    {
+      "name": "Sao lưu riêng cả ba lớp",
+      "ok": true
+    }
+  ],
+  "updated": "2026-09-27T07:32:05.826Z",
+  "frame": 1790494318272
+}

@@ -1,0 +1,752 @@
+{
+  "3A4": [
+    {
+      "stt": 1,
+      "name": "Nguyễn Bảo An",
+      "TOAN": [
+        7,
+        10
+      ],
+      "TIENG_VIET": [
+        7,
+        9
+      ]
+    },
+    {
+      "stt": 2,
+      "name": "Lưu Phương Anh",
+      "TOAN": [
+        7,
+        8
+      ],
+      "TIENG_VIET": [
+        7,
+        8
+      ]
+    },
+    {
+      "stt": 3,
+      "name": "Nguyễn Gia Bảo",
+      "TOAN": [
+        5,
+        10
+      ],
+      "TIENG_VIET": [
+        6,
+        9
+      ]
+    },
+    {
+      "stt": 4,
+      "name": "Đỗ Ngọc Châu",
+      "TOAN": [
+        7,
+        10
+      ],
+      "TIENG_VIET": [
+        6,
+        9
+      ]
+    },
+    {
+      "stt": 5,
+      "name": "Phùng Thảo Chi",
+      "TOAN": [
+        7,
+        9
+      ],
+      "TIENG_VIET": [
+        8,
+        9
+      ]
+    },
+    {
+      "stt": 6,
+      "name": "Đinh Thành Công",
+      "TOAN": [
+        6,
+        10
+      ],
+      "TIENG_VIET": [
+        6,
+        9
+      ]
+    },
+    {
+      "stt": 7,
+      "name": "Nguyễn Quang Dũng",
+      "TOAN": [
+        5,
+        10
+      ],
+      "TIENG_VIET": [
+        6,
+        9
+      ]
+    },
+    {
+      "stt": 8,
+      "name": "Lưu Tiến Đạt",
+      "TOAN": [
+        8,
+        8
+      ],
+      "TIENG_VIET": [
+        8,
+        8
+      ]
+    },
+    {
+      "stt": 9,
+      "name": "Nguyễn Hương Giang",
+      "TOAN": [
+        6,
+        10
+      ],
+      "TIENG_VIET": [
+        7,
+        9
+      ]
+    },
+    {
+      "stt": 10,
+      "name": "Nguyễn Bảo Hân",
+      "TOAN": [
+        6,
+        10
+      ],
+      "TIENG_VIET": [
+        8,
+        9
+      ]
+    },
+    {
+      "stt": 11,
+      "name": "Đinh Huy Hoàng",
+      "TOAN": [
+        6,
+        10
+      ],
+      "TIENG_VIET": [
+        6,
+        9
+      ]
+    },
+    {
+      "stt": 12,
+      "name": "Nguyễn Minh Khang",
+      "TOAN": [
+        7,
+        10
+      ],
+      "TIENG_VIET": [
+        5,
+        9
+      ]
+    },
+    {
+      "stt": 13,
+      "name": "Nguyễn Anh Khoa",
+      "TOAN": [
+        7,
+        10
+      ],
+      "TIENG_VIET": [
+        6,
+        7
+      ]
+    },
+    {
+      "stt": 14,
+      "name": "Lê Viết Tùng Lâm",
+      "TOAN": [
+        8,
+        8
+      ],
+      "TIENG_VIET": [
+        6,
+        6
+      ]
+    },
+    {
+      "stt": 15,
+      "name": "Nguyễn Vũ Phương Nam",
+      "TOAN": [
+        5,
+        10
+      ],
+      "TIENG_VIET": [
+        5,
+        9
+      ]
+    },
+    {
+      "stt": 16,
+      "name": "Nguyễn Như Ngọc",
+      "TOAN": [
+        6,
+        10
+      ],
+      "TIENG_VIET": [
+        7,
+        8
+      ]
+    },
+    {
+      "stt": 17,
+      "name": "Nguyễn Minh Nhật",
+      "TOAN": [
+        6,
+        10
+      ],
+      "TIENG_VIET": [
+        6,
+        9
+      ]
+    }
+  ],
+  "4": [
+    {
+      "stt": 1,
+      "name": "Đinh Hoài An",
+      "TOAN": [
+        7,
+        9
+      ],
+      "TIENG_VIET": [
+        5,
+        9
+      ]
+    },
+    {
+      "stt": 2,
+      "name": "Nguyễn Phương Anh",
+      "TOAN": [
+        6,
+        8
+      ],
+      "TIENG_VIET": [
+        7,
+        7
+      ]
+    },
+    {
+      "stt": 3,
+      "name": "Nguyễn Thục Anh",
+      "TOAN": [
+        7,
+        9
+      ],
+      "TIENG_VIET": [
+        7,
+        7
+      ]
+    },
+    {
+      "stt": 4,
+      "name": "Trương Gia Bảo",
+      "TOAN": [
+        6,
+        9
+      ],
+      "TIENG_VIET": [
+        6,
+        9
+      ]
+    },
+    {
+      "stt": 5,
+      "name": "Nguyễn Thùy Chinh",
+      "TOAN": [
+        7,
+        8
+      ],
+      "TIENG_VIET": [
+        7,
+        8
+      ]
+    },
+    {
+      "stt": 6,
+      "name": "Nguyễn Văn Đức",
+      "TOAN": [
+        7,
+        8
+      ],
+      "TIENG_VIET": [
+        6,
+        9
+      ]
+    },
+    {
+      "stt": 7,
+      "name": "Nguyễn Hương Giang",
+      "TOAN": [
+        7,
+        9
+      ],
+      "TIENG_VIET": [
+        7,
+        9
+      ]
+    },
+    {
+      "stt": 8,
+      "name": "Lưu Thị Thu Hà",
+      "TOAN": [
+        7,
+        10
+      ],
+      "TIENG_VIET": [
+        7,
+        9
+      ]
+    },
+    {
+      "stt": 9,
+      "name": "Lê Trung Hiếu",
+      "TOAN": [
+        5,
+        9
+      ],
+      "TIENG_VIET": [
+        7,
+        9
+      ]
+    },
+    {
+      "stt": 10,
+      "name": "Nguyễn Ngọc Thu Huyền",
+      "TOAN": [
+        7,
+        10
+      ],
+      "TIENG_VIET": [
+        7,
+        9
+      ]
+    },
+    {
+      "stt": 11,
+      "name": "Trương Thanh Huyền",
+      "TOAN": [
+        7,
+        9
+      ],
+      "TIENG_VIET": [
+        7,
+        9
+      ]
+    },
+    {
+      "stt": 12,
+      "name": "Nguyễn Gia Linh",
+      "TOAN": [
+        7,
+        9
+      ],
+      "TIENG_VIET": [
+        7,
+        8
+      ]
+    },
+    {
+      "stt": 13,
+      "name": "Nguyễn Phương Linh",
+      "TOAN": [
+        7,
+        10
+      ],
+      "TIENG_VIET": [
+        7,
+        9
+      ]
+    },
+    {
+      "stt": 14,
+      "name": "Nguyễn Ngọc Mai",
+      "TOAN": [
+        7,
+        10
+      ],
+      "TIENG_VIET": [
+        8,
+        9
+      ]
+    },
+    {
+      "stt": 15,
+      "name": "Lê Minh Ngọc",
+      "TOAN": [
+        6,
+        9
+      ],
+      "TIENG_VIET": [
+        5,
+        7
+      ]
+    },
+    {
+      "stt": 16,
+      "name": "Trần Ánh Ngọc",
+      "TOAN": [
+        7,
+        10
+      ],
+      "TIENG_VIET": [
+        6,
+        9
+      ]
+    },
+    {
+      "stt": 17,
+      "name": "Nguyễn Thảo Nhi",
+      "TOAN": [
+        9,
+        8
+      ],
+      "TIENG_VIET": [
+        7,
+        8
+      ]
+    },
+    {
+      "stt": 18,
+      "name": "Trương Thanh Phong",
+      "TOAN": [
+        6,
+        10
+      ],
+      "TIENG_VIET": [
+        7,
+        9
+      ]
+    },
+    {
+      "stt": 19,
+      "name": "Trần Minh Thiện",
+      "TOAN": [
+        7,
+        10
+      ],
+      "TIENG_VIET": [
+        5,
+        8
+      ]
+    },
+    {
+      "stt": 20,
+      "name": "Nguyễn Thanh Toàn",
+      "TOAN": [
+        6,
+        9
+      ],
+      "TIENG_VIET": [
+        6,
+        8
+      ]
+    },
+    {
+      "stt": 21,
+      "name": "Lưu Bảo Trang",
+      "TOAN": [
+        7,
+        9
+      ],
+      "TIENG_VIET": [
+        6,
+        8
+      ]
+    },
+    {
+      "stt": 22,
+      "name": "Lưu Tường Vy",
+      "TOAN": [
+        5,
+        10
+      ],
+      "TIENG_VIET": [
+        7,
+        9
+      ]
+    }
+  ],
+  "5A3": [
+    {
+      "stt": 1,
+      "name": "Nguyễn Quỳnh Anh",
+      "TOAN": [
+        7,
+        9
+      ],
+      "TIENG_VIET": [
+        6,
+        9
+      ]
+    },
+    {
+      "stt": 2,
+      "name": "Dương Đức Bảo",
+      "TOAN": [
+        6,
+        7
+      ],
+      "TIENG_VIET": [
+        6,
+        9
+      ]
+    },
+    {
+      "stt": 3,
+      "name": "Nguyễn Gia Bảo",
+      "TOAN": [
+        5,
+        9
+      ],
+      "TIENG_VIET": [
+        6,
+        8
+      ]
+    },
+    {
+      "stt": 4,
+      "name": "Lê Xuân Bình",
+      "TOAN": [
+        5,
+        9
+      ],
+      "TIENG_VIET": [
+        7,
+        9
+      ]
+    },
+    {
+      "stt": 5,
+      "name": "Nguyễn Thùy Dung",
+      "TOAN": [
+        5,
+        9
+      ],
+      "TIENG_VIET": [
+        8,
+        9
+      ]
+    },
+    {
+      "stt": 6,
+      "name": "Nguyễn Tiến Dũng",
+      "TOAN": [
+        9,
+        9
+      ],
+      "TIENG_VIET": [
+        8,
+        9
+      ]
+    },
+    {
+      "stt": 7,
+      "name": "Nguyễn Anh Duy",
+      "TOAN": [
+        8,
+        9
+      ],
+      "TIENG_VIET": [
+        7,
+        8
+      ]
+    },
+    {
+      "stt": 8,
+      "name": "Phùng Tiến Đạt",
+      "TOAN": [
+        6,
+        9
+      ],
+      "TIENG_VIET": [
+        8,
+        9
+      ]
+    },
+    {
+      "stt": 9,
+      "name": "Đinh Minh Đức",
+      "TOAN": [
+        7,
+        9
+      ],
+      "TIENG_VIET": [
+        6,
+        8
+      ]
+    },
+    {
+      "stt": 10,
+      "name": "Nguyễn Hương Giang",
+      "TOAN": [
+        7,
+        9
+      ],
+      "TIENG_VIET": [
+        6,
+        8
+      ]
+    },
+    {
+      "stt": 11,
+      "name": "Nguyễn Mạnh Hùng",
+      "TOAN": [
+        6,
+        9
+      ],
+      "TIENG_VIET": [
+        6,
+        9
+      ]
+    },
+    {
+      "stt": 12,
+      "name": "Lê Quốc Hưng",
+      "TOAN": [
+        6,
+        9
+      ],
+      "TIENG_VIET": [
+        8,
+        9
+      ]
+    },
+    {
+      "stt": 13,
+      "name": "Nguyễn Gia Hưng",
+      "TOAN": [
+        6,
+        8
+      ],
+      "TIENG_VIET": [
+        8,
+        9
+      ]
+    },
+    {
+      "stt": 14,
+      "name": "Nguyễn Chí Khang",
+      "TOAN": [
+        5,
+        9
+      ],
+      "TIENG_VIET": [
+        7,
+        9
+      ]
+    },
+    {
+      "stt": 15,
+      "name": "Nguyễn Minh Khang",
+      "TOAN": [
+        6,
+        10
+      ],
+      "TIENG_VIET": [
+        6,
+        9
+      ]
+    },
+    {
+      "stt": 16,
+      "name": "Nguyễn Trung Kiên",
+      "TOAN": [
+        8,
+        9
+      ],
+      "TIENG_VIET": [
+        6,
+        9
+      ]
+    },
+    {
+      "stt": 17,
+      "name": "Nguyễn Hoàng Bảo Lâm",
+      "TOAN": [
+        5,
+        9
+      ],
+      "TIENG_VIET": [
+        7,
+        9
+      ]
+    },
+    {
+      "stt": 18,
+      "name": "Lê Vĩ Lập",
+      "TOAN": [
+        7,
+        9
+      ],
+      "TIENG_VIET": [
+        8,
+        9
+      ]
+    },
+    {
+      "stt": 19,
+      "name": "Nguyễn Phương Linh",
+      "TOAN": [
+        7,
+        9
+      ],
+      "TIENG_VIET": [
+        7,
+        9
+      ]
+    },
+    {
+      "stt": 20,
+      "name": "Nguyễn Ngọc Ly",
+      "TOAN": [
+        6,
+        9
+      ],
+      "TIENG_VIET": [
+        8,
+        9
+      ]
+    },
+    {
+      "stt": 21,
+      "name": "Nguyễn Khắc Hoàng Nam",
+      "TOAN": [
+        10,
+        9
+      ],
+      "TIENG_VIET": [
+        8,
+        9
+      ]
+    },
+    {
+      "stt": 22,
+      "name": "Nguyễn Thành Nam",
+      "TOAN": [
+        6,
+        9
+      ],
+      "TIENG_VIET": [
+        8,
+        9
+      ]
+    },
+    {
+      "stt": 23,
+      "name": "Đinh Trọng Nghĩa",
+      "TOAN": [
+        10,
+        9
+      ],
+      "TIENG_VIET": [
+        8,
+        9
+      ]
+    }
+  ]
+}
