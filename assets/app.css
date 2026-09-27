@@ -8,3 +8,73 @@
 /* Supplied class worksheets use native details for previews and the existing print flow. */
 .remedial-source-info{margin-bottom:18px;padding:16px;border:1px solid #bbf7d0;border-radius:12px;background:#f0fdf4;font-size:13px;line-height:1.65}.remedial-source-info details{margin-top:12px}.remedial-source-info summary,.remedial-preview summary{font-weight:700;color:#166534}.remedial-source-info p{margin:10px 0}.remedial-source-info ul,.remedial-source-info ol{padding-left:22px;list-style:disc}.remedial-source-info ol{list-style:decimal}.remedial-source-info li{margin:8px 0}.remedial-source-info a{color:#b71c1c;text-decoration:underline}.remedial-context{white-space:pre-line}.remedial-card{align-items:stretch;flex-direction:column;justify-content:flex-start;min-width:0}.remedial-card>.action-button{align-self:flex-start;margin-top:auto}.remedial-preview{width:100%;border-top:1px solid #e2e8f0;padding-top:12px}.remedial-material{font-size:14px;line-height:1.7;overflow-wrap:anywhere}.remedial-origin{color:#64748b;font-size:12px;margin:12px 0}.remedial-subject{margin:16px 0;padding-top:12px;border-top:1px solid #e2e8f0}.remedial-subject h4{font-weight:800;color:#b71c1c;font-size:15px;margin:0 0 10px}.remedial-subject h5{font-weight:700;margin:14px 0 6px}.remedial-exercises{list-style:none;padding:0}.remedial-exercises li{margin:14px 0}.remedial-profile{margin:20px 0;padding:16px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px}
 @media print{.remedial-material{font-size:12px;line-height:1.55}.remedial-subject h4,.remedial-subject h5{break-after:avoid}.remedial-subject li{break-inside:avoid}.print-sheet .remedial-exercises{list-style:none;padding:0}.print-sheet .remedial-comment{margin:8px 0}.print-sheet .remedial-origin{margin:10px 0}.print-sheet .source-notice{font-size:11px}}
+/* Actual streaming workspace; full-page image and detected regions share coordinates. */
+.ai-live{margin:18px 0;border:1px solid #bbf7d0;border-radius:14px;background:#f8fafc;padding:14px}.ai-live>header{margin-bottom:12px}.ai-live h3{font-weight:800;font-size:14px}.ai-live>header h3{color:#166534}.ai-live-columns{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;align-items:start}.ai-live-panel{min-width:0;background:white;border:1px solid #e2e8f0;border-radius:10px;padding:12px;font-size:13px;line-height:1.65;overflow-wrap:anywhere;max-height:75vh;overflow:auto}.ai-live-panel>h3{position:sticky;top:-12px;background:white;padding:8px 0;z-index:1;color:#b71c1c}.ai-live-panel p{margin:9px 0;white-space:pre-wrap}.ai-live-panel ol{padding-left:20px;list-style:decimal}.ai-live-panel li{margin:12px 0}.ai-live-panel small{font-size:11px;color:#64748b}.ai-live-criterion{border-bottom:1px solid #e2e8f0;padding:10px 0}.ai-live-criterion h4{font-weight:700}.ai-page-image{position:relative;width:100%;line-height:0}.ai-page-image img{display:block;width:100%;height:auto}.ai-page-image svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}.ai-page-image rect{fill:#22c55e12;stroke:#16a34a;stroke-width:2;vector-effect:non-scaling-stroke}#ai-live-status{font-size:13px;margin-top:6px}.ai-status[data-status=auto_saved]{background:#dcfce7;color:#166534}.ai-status[data-status=save_error]{background:#fee2e2;color:#991b1b}
+@media(max-width:800px){.ai-live-columns{grid-template-columns:1fr}.ai-live-panel{max-height:none}.ai-live-panel>h3{position:static}.ai-live{padding:8px}}
+.ai-live{scroll-margin-top:140px}
+
+/* Screen typography only: keep the existing palette, spacing, layout and print styles. */
+@media screen {
+  .text-\[9px\]:not(i), .text-\[10px\]:not(i) { font-size:12px; }
+  .text-\[11px\]:not(i) { font-size:13px; }
+  .text-xs:not(i) { font-size:14px; line-height:1.45; }
+  .text-sm:not(i) { font-size:16px; line-height:1.5; }
+
+  .data-controls, .class-summary, .approval-card,
+  .ai-panel, .ai-rubric, .ai-upload-item, .remedial-source-info,
+  .ai-live-panel, #ai-live-status, #paired-summary p {
+    font-size:15px;
+  }
+  .student-summary, .html-chart, .action-button, .source-notice,
+  .upload-file, .ai-match-warning, .remedial-origin {
+    font-size:14px;
+  }
+  .data-table, #tab-classes table, #overview-score-table {
+    font-size:15px;
+    line-height:1.5;
+  }
+  .html-chart .bar-row span, .ai-live-panel small { font-size:13px; }
+  .approval-card small, .bar-row small, #queue-table-body small,
+  .ai-upload-item small { font-size:13px; }
+  .ai-review-dialog, .remedial-material, .remedial-subject h4, .ai-live h3 {
+    font-size:16px;
+  }
+  .ai-panel input, .ai-panel select, .ai-rubric input, .ai-rubric textarea,
+  .ai-upload-item select, #upload-round-select, #ai-test-job,
+  .ai-review-dialog input[type=number], .ai-review-dialog textarea {
+    font-size:16px;
+  }
+}
+@media screen and (min-width:640px) {
+  .sm\:text-sm:not(i) { font-size:16px; line-height:1.5; }
+}
+
+/* The exercise labels are real text so they also survive printing and copying. */
+ol.ai-practice-list { list-style:none; padding-left:0; }
+.ai-practice-list li { margin:0.6em 0; white-space:pre-wrap; }
+
+.ai-live-panel h4, #ai-review-content section h4 { font-weight:700; }
+
+.remedial-notes h4,.remedial-exercises-heading { font-weight:800; color:#b71c1c; margin:12px 0 6px; }
+.remedial-notes p { margin:8px 0; }
+/* Full source text stays on one A4 sheet per child; no clipping or fixed-height overflow. */
+@page { size:A4 portrait; margin:12mm; }
+@media print {
+  html,body { margin:0!important; padding:0!important; height:auto!important; overflow:visible!important; }
+  html,body,#print-area,.student-worksheet { background:#fff!important; }
+  .student-worksheet { padding:0; font:11pt/1.3 Arial,sans-serif; color:#111; break-after:page; }
+  .student-worksheet:last-child { break-after:auto; }
+  .student-worksheet header { border-bottom:1px solid #777; padding-bottom:5pt; margin-bottom:6pt; }
+  .student-worksheet h2 { font-size:10pt; margin:0 0 4pt; text-align:center; }
+  .student-worksheet h3 { font-size:14pt; margin:0 0 6pt; text-align:center; }
+  .student-worksheet p { margin:4pt 0; }
+  .student-worksheet .worksheet-student { margin:0; }
+  .student-worksheet .remedial-material { font:inherit; overflow-wrap:break-word; }
+  .student-worksheet .remedial-origin { font-size:9pt; margin:0 0 5pt; color:#444; }
+  .student-worksheet h4 { font-size:11pt; font-weight:700; color:#111; margin:7pt 0 4pt; break-after:avoid; }
+  .student-worksheet .remedial-subject { margin:5pt 0; padding:0; border:0; }
+  .student-worksheet .remedial-subject h5 { font-size:11pt; margin:4pt 0; color:#111; }
+  .student-worksheet .remedial-exercises { margin:0; padding:0; list-style:none; }
+  .student-worksheet .remedial-exercises li { margin:4pt 0; break-inside:avoid; }
+  .student-worksheet footer { margin-top:8pt; padding-top:4pt; border-top:1px solid #aaa; font-size:9pt; color:#444; }
+}

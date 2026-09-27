@@ -15,36 +15,41 @@ for (const [classId, data] of Object.entries(SOURCE_DATA)) {
   const byName = new Map();
   for (const [subject, rows] of Object.entries(data.subjects)) {
     rows.forEach(row => {
-      let student = byName.get(row.name);
+      const key = data.identityKey === 'stt' ? row.stt : row.name;
+      let student = byName.get(key);
       if (!student) {
-        student = {id: `${classId}-${String(byName.size+1).padStart(3,'0')}`, classId, name: row.name, subjects: {}, comments: {}, approved: {}};
-        byName.set(row.name, student);
+        student = {id: data.identityKey === 'stt' ? `${classId}-stt-${String(row.stt).padStart(3,'0')}` : `${classId}-${String(byName.size+1).padStart(3,'0')}`, classId, name: row.name, subjects: {}, comments: {}, approved: {}};
+        if (data.identityKey === 'stt') Object.assign(student, {stt:row.stt, rosterRevision:data.rosterRevision});
+        byName.set(key, student);
       }
       student.subjects[subject] = [...row.scores];
     });
   }
   studentsDatabase.push(...byName.values());
 }
-// Only exact names within one class share a profile. Blank scores stay null.
+// Confirmed rosters use class + fixed STT. Other classes retain exact-name matching.
+function sourceMatches(student, row) { return SOURCE_DATA[student.classId].identityKey === 'stt' ? student.stt === row.stt : student.name === row.name; }
+function studentLabel(student) { return `${student.stt ? `STT ${student.stt} · ` : ''}${student.name}`; }
 function classStudents(classId = currentClass) { return studentsDatabase.filter(s => s.classId === classId); }
-function subjectStudents(subject, classId = currentClass) { return SOURCE_DATA[classId].subjects[subject].map(row => classStudents(classId).find(s => s.name === row.name)); }
+function subjectStudents(subject, classId = currentClass) { return SOURCE_DATA[classId].subjects[subject].map(row => classStudents(classId).find(s => sourceMatches(s,row))); }
 function visibleStudents() { return currentFilterSubject === 'ALL' ? classStudents() : subjectStudents(currentFilterSubject); }
 function chosenSubjects() { return currentFilterSubject === 'ALL' ? Object.keys(SUBJECTS) : [currentFilterSubject]; }
-function classLabel(classId = currentClass) { return classId === '4' ? 'Lớp 4' : `Lớp ${SOURCE_DATA[classId].grade} · ${classId}`; }
+function classLabel(classId = currentClass) { return `Lớp ${SOURCE_DATA[classId].grade} · ${SOURCE_DATA[classId].className || classId}`; }
 function scoreValues(subject, round, classId = currentClass) { return subjectStudents(subject, classId).map(s => s.subjects[subject][round]).filter(Number.isFinite); }
 function selectedValues(round = currentRound) { return chosenSubjects().flatMap(subject => scoreValues(subject,round)); }
-function originalScores(student, subject) { return SOURCE_DATA[student.classId].subjects[subject].find(s => s.name === student.name)?.scores ?? [null,null]; }
-function note(student) { return Object.keys(student.subjects).length === 1 ? 'Tên chưa khớp giữa hai môn — cần đối chiếu' : Object.values(student.subjects).some(scores => scores.includes(null)) ? 'Có ô điểm trống trong nguồn' : 'Khớp tên giữa hai môn'; }
+function originalScores(student, subject) { return SOURCE_DATA[student.classId].subjects[subject].find(row => sourceMatches(student,row))?.scores ?? [null,null]; }
+function note(student) { return student.stt ? `STT ${student.stt} cố định cho cả hai môn` : Object.keys(student.subjects).length === 1 ? 'Tên chưa khớp giữa hai môn — cần đối chiếu' : Object.values(student.subjects).some(scores => scores.includes(null)) ? 'Có ô điểm trống trong nguồn' : 'Khớp tên giữa hai môn'; }
 function persist() {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(studentsDatabase)); return true; }
+  try { GradeStorage.saveStudents(studentsDatabase); return true; }
   catch { showToast('Không lưu được vào trình duyệt. Hãy xuất Excel để giữ các chỉnh sửa.'); return false; }
 }
 function restore() {
   try {
-    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    for (const [classId,data] of Object.entries(SOURCE_DATA)) if (data.rosterRevision) GradeStorage.backupBeforeRosterUpdate(classId,data.rosterRevision);
+    const saved = GradeStorage.read().students;
     if (!Array.isArray(saved)) return;
     for (const student of studentsDatabase) {
-      const row = saved.find(r => r.id === student.id && r.name === student.name);
+      const row = saved.find(r => r.id === student.id && (student.stt ? r.stt === student.stt && r.rosterRevision === student.rosterRevision : r.name === student.name));
       if (!row) continue;
       for (const subject of Object.keys(student.subjects)) {
         const scores = row.subjects?.[subject];
@@ -94,7 +99,7 @@ function rowCells(student) {
 }
 function renderGradebookTable() {
   $('student-count-badge').textContent = visibleStudents().length;
-  $('student-table-body').innerHTML = visibleStudents().map((student,i) => `<tr><td>${i+1}</td><td>${student.id}</td><td><button class="student-link" onclick="openStudentModal('${student.id}')">${escapeHTML(student.name)}</button></td>${rowCells(student)}<td>${note(student)}</td><td><div class="row-actions"><button title="Sửa & Duyệt điểm" aria-label="Sửa điểm ${escapeHTML(student.name)}" onclick="openApprovalModal('${student.id}')">✎</button><button title="In phiếu bài tập" aria-label="In phiếu ${escapeHTML(student.name)}" onclick="printSingleRemedialSheet('${student.id}')">In</button></div></td></tr>`).join('');
+  $('student-table-body').innerHTML = visibleStudents().map((student,i) => `<tr><td>${student.stt??i+1}</td><td>${student.id}</td><td><button class="student-link" onclick="openStudentModal('${student.id}')">${escapeHTML(student.name)}</button></td>${rowCells(student)}<td>${note(student)}</td><td><div class="row-actions"><button title="Sửa & Duyệt điểm" aria-label="Sửa điểm ${escapeHTML(student.name)}" onclick="openApprovalModal('${student.id}')">✎</button><button title="In phiếu bài tập" aria-label="In phiếu ${escapeHTML(student.name)}" onclick="printSingleRemedialSheet('${student.id}')">In</button></div></td></tr>`).join('');
   const headers = $('student-table-body').closest('table').querySelectorAll('thead th');
   ['TOAN','TIENG_VIET'].forEach((subject,i) => {
     const hidden = currentFilterSubject !== 'ALL' && currentFilterSubject !== subject;
@@ -136,7 +141,7 @@ function initSubjectProgressChart() {
   $('progress-data-table').innerHTML = `<table class="data-table"><caption>${classLabel()} — Trung bình và số điểm hợp lệ</caption><thead><tr><th>Môn</th><th>Đợt 1</th><th>Số điểm Đ1</th><th>Đợt 2</th><th>Số điểm Đ2</th></tr></thead><tbody>${chosenSubjects().map(sub=>`<tr><td>${SUBJECTS[sub]}</td><td>${fmt(mean(scoreValues(sub,0)))}</td><td>${scoreValues(sub,0).length}</td><td>${fmt(mean(scoreValues(sub,1)))}</td><td>${scoreValues(sub,1).length}</td></tr>`).join('')}</tbody></table>`;
   const students = visibleStudents();
   if (!students.some(s=>s.id===chartStudentId)) chartStudentId=students[0]?.id;
-  $('student-chart-select').innerHTML = students.map(s=>`<option value="${s.id}">${escapeHTML(s.name)}</option>`).join('');
+  $('student-chart-select').innerHTML = students.map(s=>`<option value="${s.id}">${escapeHTML(studentLabel(s))}</option>`).join('');
   $('student-chart-select').value=chartStudentId;
   selectChartStudent(chartStudentId);
 }
@@ -161,8 +166,8 @@ function refreshAll() {
     const active=b.getAttribute('onclick').includes(`'${currentFilterSubject}'`);
     b.classList.toggle('bg-brand-red',active); b.classList.toggle('text-white',active); b.classList.toggle('bg-white',!active); b.setAttribute('aria-pressed',active);
   });
-  $('overview-students-view').innerHTML=visibleStudents().map(s=>`<div class="student-summary"><span>${escapeHTML(s.name)}</span><button onclick="openStudentModal('${s.id}')">Hồ sơ</button></div>`).join('');
-  $('overview-score-body').innerHTML=visibleStudents().slice(0,5).map(s=>`<tr><td><button class="student-link" onclick="openApprovalModal('${s.id}')">${escapeHTML(s.name)}</button></td>${['TOAN','TIENG_VIET'].flatMap(sub=>[0,1].map(r=>`<td>${fmt(s.subjects[sub]?.[r])}</td>`)).join('')}</tr>`).join('');
+  $('overview-students-view').innerHTML=visibleStudents().map(s=>`<div class="student-summary"><span>${escapeHTML(studentLabel(s))}</span><button onclick="openStudentModal('${s.id}')">Hồ sơ</button></div>`).join('');
+  $('overview-score-body').innerHTML=visibleStudents().slice(0,5).map(s=>`<tr><td><button class="student-link" onclick="openApprovalModal('${s.id}')">${escapeHTML(studentLabel(s))}</button></td>${['TOAN','TIENG_VIET'].flatMap(sub=>[0,1].map(r=>`<td>${fmt(s.subjects[sub]?.[r])}</td>`)).join('')}</tr>`).join('');
   renderGradebookTable(); initAllCharts(); initSubjectProgressChart();
   renderApprovalCards(); renderRemedialCards(); renderUploads(); navigateStudentDetail(0);
   if(window.AI) AI.scopeChanged();
@@ -174,7 +179,7 @@ function exportGradebookExcel(classId, subject) {
   (subject==='ALL'?Object.keys(SUBJECTS):[subject]).forEach(sub=>{
     const students=subjectStudents(sub,classId);
     const rows=[[SCHOOL],[classLabel(classId), SUBJECTS[sub], 'admin'],['Điểm trống được giữ trống; Δ = Đợt 2 − Đợt 1'],['STT','Mã HS','Họ và tên','Đợt 1','Đợt 2','Thay đổi','Đối chiếu','Lời phê Đ1','Lời phê Đ2']];
-    students.forEach((s,i)=>rows.push([i+1,s.id,s.name,...s.subjects[sub],delta(s.subjects[sub]),note(s),s.comments[`${sub}-0`]||'',s.comments[`${sub}-1`]||'']));
+    students.forEach((s,i)=>rows.push([s.stt??i+1,s.id,s.name,...s.subjects[sub],delta(s.subjects[sub]),note(s),s.comments[`${sub}-0`]||'',s.comments[`${sub}-1`]||'']));
     const sheet=XLSX.utils.aoa_to_sheet(rows); sheet['!cols']=[{wch:6},{wch:12},{wch:28},{wch:10},{wch:10},{wch:12},{wch:50},{wch:35},{wch:35}];
     XLSX.utils.book_append_sheet(workbook,sheet,sub==='TOAN'?'Toan':'Tieng_Viet');
   });
@@ -187,11 +192,13 @@ function navigateStudentDetail(direction) {
   let index=students.findIndex(s=>s.id===currentSelectedStudentId); if(index<0)index=0;
   index=(index+direction+students.length)%students.length;
   const student=students[index]; currentSelectedStudentId=student.id;
-  $('detail-student-name').textContent=`${student.name} — ${classLabel()}`;
+  $('detail-student-name').textContent=`${studentLabel(student)} — ${classLabel()}`;
   $('detail-counter').textContent=`${index+1} / ${students.length}`;
   $('detail-badge-score').textContent=`Đợt ${currentRound+1} · ${chosenSubjects().map(sub=>`${SUBJECTS[sub]}: ${fmt(student.subjects[sub]?.[currentRound])}`).join(' · ')}`;
   $('student-detail-data').innerHTML=studentBars(student)+`<p>${note(student)}</p>`;
-  $('detail-ai-comment').textContent=chosenSubjects().map(sub=>`${SUBJECTS[sub]}: ${student.comments[`${sub}-${currentRound}`] || 'Chưa có lời phê.'}`).join(' ');
+  const savedCommentSubjects=chosenSubjects().filter(sub=>student.comments[`${sub}-${currentRound}`]?.trim());
+  $('detail-ai-comment').hidden=!savedCommentSubjects.length;
+  $('detail-ai-comment').innerHTML=savedCommentSubjects.map(sub=>`<strong>Lời phê đã lưu · ${SUBJECTS[sub]} · Đợt ${currentRound+1}</strong><br>${GradingFeedback.html(student.comments[`${sub}-${currentRound}`])}`).join('<br><br>');
   const imported=importedRemedialHTML(student);
   $('detail-remedial-material').hidden=!imported;$('detail-remedial-material').innerHTML=imported;
   if(window.AI) AI.renderStudentReports();
@@ -199,7 +206,7 @@ function navigateStudentDetail(direction) {
 function openApprovalModal(id) {
   const student=studentsDatabase.find(s=>s.id===id); if(!student)return;
   currentSelectedStudentId=id; lastFocus=document.activeElement;
-  $('modal-student-name').textContent=`Duyệt điểm: ${student.name}`;
+  $('modal-student-name').textContent=`Duyệt điểm: ${studentLabel(student)}`;
   $('modal-student-id').textContent=`${classLabel(student.classId)} • ${student.id} • admin`;
   $('approval-subject').innerHTML=Object.keys(student.subjects).map(sub=>`<option value="${sub}">${SUBJECTS[sub]}</option>`).join('');
   $('approval-subject').value=student.subjects[currentFilterSubject]?currentFilterSubject:Object.keys(student.subjects)[0];
@@ -219,27 +226,38 @@ function saveStudentApproval(isApproved) {
   const score=raw===''?null:Number(raw);
   if(raw!==''&&(!Number.isFinite(score)||score<0||score>10)) {showToast('Điểm phải nằm trong khoảng 0–10; để trống nếu chưa có điểm.');input.focus();return;}
   const student=studentsDatabase.find(s=>s.id===currentSelectedStudentId), subject=$('approval-subject').value, round=Number($('approval-round').value), key=`${subject}-${round}`;
+  const previous=JSON.parse(JSON.stringify(student));
   student.subjects[subject][round]=score; student.comments[key]=$('modal-comment-input').value; student.approved[key]=Boolean(isApproved && score!==null);
-  const saved=persist(); closeApprovalModal(); refreshAll(); if(saved)showToast(`Đã lưu ${SUBJECTS[subject]} đợt ${round+1} cho ${student.name}.`);
+  if(!persist()){Object.assign(student,previous);showToast('Không lưu được. Điểm và trạng thái cũ được giữ; nội dung đang nhập vẫn ở đây để thử lưu lại.');return;}
+  closeApprovalModal(); refreshAll(); showToast(`Đã lưu ${SUBJECTS[subject]} đợt ${round+1} cho ${student.name}.`);
 }
 function renderApprovalCards() {
   $('nav-approval-count').textContent = visibleStudents().reduce((n,s) => n+chosenSubjects().filter(sub=>Number.isFinite(s.subjects[sub]?.[currentRound])&&!s.approved[`${sub}-${currentRound}`]).length,0);
-  $('approval-cards-container').innerHTML=visibleStudents().map(s=>`<article class="approval-card"><div><strong>${escapeHTML(s.name)}</strong><p>${chosenSubjects().map(sub=>`${SUBJECTS[sub]}: ${fmt(s.subjects[sub]?.[currentRound])}${s.approved[`${sub}-${currentRound}`]?' · Đã duyệt':''}`).join(' | ')}</p><small>Đợt ${currentRound+1} · ${note(s)}</small></div><button class="action-button" onclick="openApprovalModal('${s.id}')">Chỉnh sửa điểm & Lời phê</button></article>`).join('');
+  $('approval-cards-container').innerHTML=visibleStudents().map(s=>`<article class="approval-card"><div><strong>${escapeHTML(studentLabel(s))}</strong><p>${chosenSubjects().map(sub=>`${SUBJECTS[sub]}: ${fmt(s.subjects[sub]?.[currentRound])}${s.approved[`${sub}-${currentRound}`]?' · Đã duyệt':''}`).join(' | ')}</p><small>Đợt ${currentRound+1} · ${note(s)}</small></div><button class="action-button" onclick="openApprovalModal('${s.id}')">Chỉnh sửa điểm & Lời phê</button></article>`).join('');
 }
 function batchApproveAll() {
-  visibleStudents().forEach(s=>chosenSubjects().forEach(sub=>{if(Number.isFinite(s.subjects[sub]?.[currentRound]))s.approved[`${sub}-${currentRound}`]=true;}));
-  const saved=persist(); renderApprovalCards(); if(saved)showToast(`Đã duyệt các điểm có dữ liệu của ${classLabel()} · Đợt ${currentRound+1}.`);
+  const students=visibleStudents(),previous=students.map(s=>({...s.approved}));
+  students.forEach(s=>chosenSubjects().forEach(sub=>{if(Number.isFinite(s.subjects[sub]?.[currentRound]))s.approved[`${sub}-${currentRound}`]=true;}));
+  if(!persist()){students.forEach((s,i)=>s.approved=previous[i]);renderApprovalCards();showToast('Không lưu được. Trạng thái duyệt cũ được giữ; hãy thử lại.');return;}
+  renderApprovalCards(); showToast(`Đã duyệt các điểm có dữ liệu của ${classLabel()} · Đợt ${currentRound+1}.`);
 }
 function renderRemedialCards() {
   renderRemedialLibrary();
   $('remedial-cards-container').innerHTML=visibleStudents().map(s=>{
     const entries=remedialEntries(s), content=importedRemedialHTML(s);
     const aiPractice=window.AI && AI.practiceHTML(s,chosenSubjects(),currentRound);
-    return `<article class="approval-card remedial-card" data-student-id="${s.id}"><div><strong>${escapeHTML(s.name)}</strong><p>${classLabel()} · ${entries.length ? entries.map(entry=>`${SUBJECTS[entry.subject]}: ${entry.exercises.length} bài`).join(' · ') : 'Phiếu để admin bổ sung bài tập.'}</p><small>${entries.length ? 'Đã có nhận xét và bài tập từ khảo sát đợt 1.' : aiPractice ? 'Phiếu in có bài tập từ bài OpenAI đã duyệt.' : 'Chưa có bài tập được cung cấp cho môn đang chọn.'}</small></div>${content ? `<details class="remedial-preview"><summary>Xem nhận xét & bài tập</summary>${content}</details>` : ''}<button class="action-button" onclick="printSingleRemedialSheet('${s.id}')">In phiếu bài tập</button></article>`;
+    return `<article class="approval-card remedial-card" data-student-id="${s.id}"><div><strong>${escapeHTML(studentLabel(s))}</strong><p>${classLabel()} · ${entries.length ? entries.map(entry=>`${SUBJECTS[entry.subject]}: ${entry.exercises.length} bài`).join(' · ') : 'Phiếu bài tập cá nhân.'}</p><small>${entries.length ? 'Đã có nhận xét và bài tập từ khảo sát đợt 1.' : aiPractice ? 'Phiếu in có bài tập từ kết quả OpenAI đã lưu.' : 'Chưa có bài tập được cung cấp cho môn đang chọn.'}</small></div>${content ? `<details class="remedial-preview"><summary>Xem nhận xét & bài tập</summary>${content}</details>` : ''}<button class="action-button" onclick="printSingleRemedialSheet('${s.id}')">In phiếu bài tập</button></article>`;
   }).join('');
 }
 function printSheets(students) {
-  $('print-area').innerHTML=students.map(s=>`<article class="print-sheet"><h2>${SCHOOL}</h2><h3>PHIẾU THEO DÕI & RÈN LUYỆN CÁ NHÂN</h3><p>Học sinh: ${escapeHTML(s.name)} · ${classLabel(s.classId)} · ${s.id}</p><table class="data-table"><tr><th>Môn</th><th>Đợt 1</th><th>Đợt 2</th><th>Thay đổi</th></tr>${chosenSubjects().map(sub=>`<tr><td>${SUBJECTS[sub]}</td><td>${fmt(s.subjects[sub]?.[0])}</td><td>${fmt(s.subjects[sub]?.[1])}</td><td>${signed(delta(s.subjects[sub]||[null,null]))}</td></tr>`).join('')}</table><p>${note(s)}</p><p>Lời phê: ${chosenSubjects().map(sub=>escapeHTML(s.comments[`${sub}-${currentRound}`]||'')).filter(Boolean).join('; ')||'...................................................'}</p>${importedRemedialHTML(s)}${window.AI ? AI.practiceHTML(s,chosenSubjects(),currentRound) : ''}<h4>Bài tập do giáo viên bổ sung</h4><div class="writing-space"></div><p>Ngày in: ${new Date().toLocaleDateString('vi-VN')} · Giáo viên: admin</p></article>`).join('');
+  const subjects=chosenSubjects();
+  $('print-area').innerHTML=students.map(s=>{
+    const imported=importedRemedialHTML(s,subjects);
+    const missing=subjects.filter(sub=>!remedialEntries(s,[sub]).length);
+    const savedComments=missing.map(sub=>s.comments[`${sub}-${currentRound}`] ? `<p><strong>${SUBJECTS[sub]}:</strong> ${GradingFeedback.html(s.comments[`${sub}-${currentRound}`])}</p>` : '').join('');
+    const aiPractice=window.AI && missing.length ? AI.practiceHTML(s,missing,currentRound) : '';
+    return `<article class="print-sheet student-worksheet" data-student-id="${s.id}"><header><h2>${SCHOOL}</h2><h3>PHIẾU BÀI TẬP CÁ NHÂN</h3><p class="worksheet-student"><strong>Họ và tên: ${escapeHTML(s.name)}</strong> · ${classLabel(s.classId)} · STT: ${s.stt}</p></header>${imported}${savedComments}${aiPractice}${!imported&&!savedComments&&!aiPractice?'<p>Chưa có nhận xét hoặc bài tập cho môn đang chọn.</p>':''}<footer>Ngày in: ${new Date().toLocaleDateString('vi-VN')}</footer></article>`;
+  }).join('');
   $('print-area').classList.remove('hidden'); window.print(); $('print-area').classList.add('hidden');
 }
 function printSingleRemedialSheet(id) {const student=studentsDatabase.find(s=>s.id===id);if(student)printSheets([student]);}
